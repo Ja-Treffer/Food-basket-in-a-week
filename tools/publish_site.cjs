@@ -76,5 +76,7 @@ console.log("发布站点：");
 copy("game.html", path.join(site, "html_demo", "index.html"));
 copy("review.html", path.join(site, "html_review", "index.html"));
 fs.writeFileSync(path.join(site, "index.html"), index, "utf8");
+// 关掉 Jekyll：纯静态，别让构建去解析大 HTML
+fs.writeFileSync(path.join(site, ".nojekyll"), "", "utf8");
 console.log("  → site/index.html  （入口页）");
 console.log("完成。提交 site/ 后 GitHub Pages 会自动更新。");
