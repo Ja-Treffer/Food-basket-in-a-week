@@ -53,8 +53,8 @@ $p = "E:\godot_workplace\E-tech\tradeoff-sim\godot"
 一条命令就够（Godot 导出到 `godot/build/`，脚本再收进 `dist/`）：
 
 ```powershell
-pwsh -File tools/package.ps1            # 导出 + 压缩 + 摆进 dist/
-pwsh -File tools/package.ps1 -SkipExport  # 只重新压缩，不碰 Godot
+powershell -File tools/package.ps1            # 导出 + 压缩 + 摆进 dist/（pwsh 也行）
+powershell -File tools/package.ps1 -SkipExport  # 只重新压缩，不碰 Godot
 ```
 
 产出：

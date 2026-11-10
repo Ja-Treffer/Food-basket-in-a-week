@@ -1,4 +1,4 @@
-# 打包：Godot 导出 → dist/
+﻿# 打包：Godot 导出 → dist/
 #
 #   pwsh -File tools/package.ps1              # 出 exe + web 包
 #   pwsh -File tools/package.ps1 -SkipExport  # 只重新压缩，不动 Godot
@@ -41,5 +41,6 @@ Get-ChildItem $dist -Recurse -File |
 	Format-Table -AutoSize
 
 Write-Host ""
-Write-Host "发版："
-Write-Host "  gh release create v1.0.1 `"dist\win\One-Week-Basket.exe`" `"dist\one-week-basket-web.zip`" --title ... --notes ..."
+Write-Host "发版（产物不进仓库，只挂 Release）："
+Write-Host '  gh release create v1.0.1 "dist\win\One-Week-Basket.exe" "dist\one-week-basket-web.zip" --title "一周菜篮 v1.0.1" --notes "…"'
+Write-Host '  gh release upload v1.0.0 "dist\win\One-Week-Basket.exe" --clobber   # 覆盖旧资产'

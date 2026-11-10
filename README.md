@@ -18,6 +18,13 @@ NPC 派任务 → 连续几步「不带数字」的选择 → 结算日才结账
 | `One-Week-Basket.exe` | Windows 单文件，双击即玩（pck 已内嵌） | 46 MB |
 | `one-week-basket-web.zip` | 解压丢到任意静态站；**必须走 http(s)**，双击 `index.html` 打不开 | 10 MB |
 
+校验（`sha256`）：
+
+```
+One-Week-Basket.exe       54782db94ac940be36096b57fdaa520dcb66a09e7b201b3529c9e1d0fbe7582d
+one-week-basket-web.zip   096fa7e69ca1a92bc9682e488de17c7f154edace786e4ce456432e057f74a4fe
+```
+
 仓库里**没有**编译产物 —— `dist/` 与 `godot/build/` 都被 `.gitignore` 挡着，发布只走 Release。
 
 ## 浏览器里直接开
@@ -68,7 +75,7 @@ tradeoff-sim/
 node tools/patch_game_i18n.cjs    # 改完模板 → 重新生成 game.html
 node tools/sync_godot_data.cjs    # 模板 → Godot 的数据
 node tools/check_review.cjs       # 题库自检（三语、长度、抽样）
-pwsh -File tools/package.ps1      # 导出 exe + web，收进 dist/
+pwsh -File tools/package.ps1      # 或 powershell -File，导出 exe + web 收进 dist/
 ```
 
 ## 文档
