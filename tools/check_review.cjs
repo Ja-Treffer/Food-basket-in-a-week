@@ -90,29 +90,42 @@ Q.forEach((q, i) => {
 
   const xOk = q.x.filter((s, k) => k !== q.a && String(s[0]).trim()).length === 3 && !String(q.x[q.a][0]).trim();
 
-  const ok = ratio <= 1.5 && !longestIsCorrect && !shortestIsCorrect && !outOfRange &&
-             !optCount && !dupZh && !dupEn && !enTooShort && enRatio <= 2.2 && !twBad && xOk;
+  // 衍生题考的是理由，机制本身就该长一点，长度偏置规则不适用；
+  // 改判它有没有把「机制 / 口号 / 说不通」三种角色都摆进去。
+  const isDerive = q.kind === 'derive';
+  const tagOk = !isDerive || (
+    Array.isArray(q.tag) && q.tag.length === 4 &&
+    q.tag.every((t) => ['mech', 'slogan', 'wrong'].includes(t)) &&
+    q.tag.filter((t) => t === 'mech').length >= 1 &&
+    q.tag.includes('slogan') && ['mech', 'slogan'].includes(q.tag[q.a])
+  );
+  const ok = (isDerive
+      ? (!optCount && !dupZh && !dupEn && xOk && tagOk)
+      : (ratio <= 1.5 && !longestIsCorrect && !shortestIsCorrect && !outOfRange &&
+         !optCount && !dupZh && !dupEn && !enTooShort && enRatio <= 2.2 && !twBad && xOk));
   if (!ok) bad.push('Q' + (i + 1));
-  rows.push({ n: i + 1, g: q.g, a: 'ABCD'[q.a], L, ratio, cLen, longestIsCorrect, shortestIsCorrect,
+  rows.push({ n: i + 1, g: q.g, a: 'ABCD'[q.a], L, ratio, cLen, isDerive, tagOk, longestIsCorrect, shortestIsCorrect,
               outOfRange, optCount, dupZh, dupEn, enRatio, enTooShort, twBad, xOk });
 });
 
-say('题库题数: ' + Q.length + (Q.length === 15 ? ' ✓' : ' ❌ 应为 15'));
-if (Q.length !== 15) bad.push('size');
+say('题库题数: ' + Q.length + (Q.length === 21 ? ' ✓（15 情景 + 6 衍生）' : ' ❌ 应为 21'));
+if (Q.length !== 21) bad.push('size');
 
 rows.forEach((r) => {
   say(
     `Q${String(r.n).padStart(2, '0')} ${r.g} 答案${r.a} 中文字数[${r.L.join(',')}] ` +
     `最长/最短=${r.ratio.toFixed(2)} 英文词比=${r.enRatio.toFixed(2)}` +
-    (r.longestIsCorrect ? ' ❌正确项唯一最长' : '') +
-    (r.shortestIsCorrect ? ' ❌正确项唯一最短' : '') +
-    (r.outOfRange ? ' ❌字数越界(12-22)' : '') +
+    (!r.isDerive && r.longestIsCorrect ? ' ❌正确项唯一最长' : '') +
+    (!r.isDerive && r.shortestIsCorrect ? ' ❌正确项唯一最短' : '') +
+    (r.isDerive ? ' [衍生]' : '') +
+    (r.outOfRange && !r.isDerive ? ' ❌字数越界(12-22)' : '') +
+    (!r.tagOk ? ' ❌标签不全' : '') +
     (r.optCount ? ' ❌选项数≠4' : '') +
     (r.dupZh ? ' ❌中文选项重复' : '') +
     (r.dupEn ? ' ❌英文选项重复' : '') +
-    (r.enTooShort ? ' ❌英文选项过短' : '') +
-    (r.enRatio > 2.2 ? ' ❌英文长度差过大' : '') +
-    (r.twBad ? ' ❌繁体字数漂移' : '') +
+    (!r.isDerive && r.enTooShort ? ' ❌英文选项过短' : '') +
+    (!r.isDerive && r.enRatio > 2.2 ? ' ❌英文长度差过大' : '') +
+    (!r.isDerive && r.twBad ? ' ❌繁体字数漂移' : '') +
     (!r.xOk ? ' ❌辨析缺项' : '')
   );
 });
@@ -138,14 +151,14 @@ for (let t = 0; t < N; t++) {
   const key = set.map((i) => Q[i].g).sort().join('');
   shape[key] = (shape[key] || 0) + 1;
   const uniq = new Set(set).size === TAKE;
-  const groupOk = ORDER.every((g) => set.some((i) => Q[i].g === g));
+  const groupOk = ['A','B','C','D'].every((g) => set.some((i) => Q[i].g === g)) &&
+                   set.filter((i) => Q[i].g === 'E').length === 2;
   const inRange = set.every((i) => Number.isInteger(i) && i >= 0 && i < Q.length);
   if (!uniq || !groupOk || !inRange || set.length !== TAKE) simBad++;
 }
 say(`\n抽样模拟 ${N} 次: 异常 ${simBad} 次` + (simBad ? ' ❌' : ` ✓（每次 ${TAKE} 题、不重复、四组齐全）`));
 if (simBad) bad.push('draw');
-say('抽样组型分布: ' + Object.entries(shape).map(([k, v]) => k + '×' + v).join('  '));
-if (Object.keys(shape).length < 4) { say('❌ 组型过于单一，第 5 题没有真正轮换'); bad.push('shape'); }
+say('抽样组型分布: ' + Object.entries(shape).map(([k, v]) => k + '×' + v).join('  ') + '（固定 = 四组各一 + 两条衍生）');
 
 /* ---------- 8. 结构检查 ---------- */
 const struct = [

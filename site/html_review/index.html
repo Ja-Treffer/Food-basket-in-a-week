@@ -95,6 +95,10 @@
   .revrow.chosen .badge{background:#3d6480; color:#fff}
   .revbody{flex:1 1 auto; min-width:0}
   .revtext{font-size:14.5px; line-height:1.5}
+  .chip{display:inline-block;padding:1px 9px;border-radius:999px;font-size:12.5px;letter-spacing:.04em}
+  .chip.mech{background:#e6f0ea;color:#2f6152;border:1px solid #b6d3c4}
+  .chip.slogan{background:#f7ecd9;color:#8a5f1f;border:1px solid #e2c79a}
+  .chip.wrong{background:#f9e9e6;color:#9c4132;border:1px solid #e5bcb4}
   .revfx{margin-top:3px; font-size:12.5px; color:#3d6480; letter-spacing:.02em}
   .revnote{margin-top:5px; font-size:13.5px; line-height:1.7; color:#4a443a}
   .fb .src{font-size:12px; color:#a69e8c; letter-spacing:.06em; margin-top:8px}
@@ -171,7 +175,7 @@
 
 <footer>
   <p id="ft1"><b>依据：</b>H1 卫生防护中心《均衡素食的要点》· H2 同页低脂烹调 · H4 Poore &amp; Nemecek（仅取方向）· R2/R5/R6/R7 IPCC AR6 WGIII 第五章 · F1 布料生命周期 · D3 设计取舍记录。</p>
-  <p id="ft2">题库 15 题，每次随机抽 6 题（四组各至少一题）。网址后加 <code>?seed=2026</code> 可固定同一套。本页不联网、不外链。</p>
+  <p id="ft2">题库 21 题：15 条情景题 + 6 条衍生题；每次固定抽 6 题——四组各一条，另加两条衍生。网址后加 <code>?seed=2026</code> 可固定同一套。本页不联网、不外链。</p>
 </footer>
 
 </div>
@@ -206,20 +210,25 @@
     gB:["采购","採購","Shopping"],
     gC:["衣物","衣物","Clothing"],
     gD:["取舍","取捨","Trade-offs"],
+    gE:["衍生","衍生","Derivation"],
+    tMech:["机制","機制","Mechanism"],
+    tSlogan:["口号","口號","Slogan"],
+    tWrong:["说不通","說不通","Does not hold"],
+    revHeadD:["你选了 %s。哪一句站得住，看它指不指得出一个具体动作、那个动作省下什么。","你選了 %s。哪一句站得住，看它指不指得出一個具體動作、那個動作省下什麼。","You picked %s. What separates these four: does it name a concrete action, and what does that action save."],
     ft1:[
       "H1 卫生防护中心《均衡素食的要点》· H2 同页低脂烹调 · H4 Poore & Nemecek（仅取方向）· R2/R5/R6/R7 IPCC AR6 WGIII 第五章 · F1 布料生命周期 · D3 设计取舍记录。",
       "H1 衛生防護中心《均衡素食的要點》· H2 同頁低脂烹調 · H4 Poore & Nemecek（僅取方向）· R2/R5/R6/R7 IPCC AR6 WGIII 第五章 · F1 布料生命週期 · D3 設計取捨記錄。",
       "H1 Centre for Health Protection, Key Points on a Balanced Vegetarian Diet · H2 low-fat cooking, same page · H4 Poore & Nemecek (direction only) · R2/R5/R6/R7 IPCC AR6 WGIII Ch.5 · F1 textile life cycle · D3 design trade-off notes."
     ],
     ft2:[
-      "题库 10 题，每次随机抽 5 题（四组各至少一题）。网址后加 ?seed=2026 可固定同一套。本页不联网、不外链。",
-      "題庫 15 題，每次隨機抽 6 題（四組各至少一題）。網址後加 ?seed=2026 可固定同一套。本頁不聯網、不外鏈。",
-      "A bank of 15 questions; each run draws 6, at least one from each group. Add ?seed=2026 to the URL to pin the same set. This page makes no network requests and links nowhere."
+      "题库 21 题：15 条情景题 + 6 条衍生题；每次固定抽 6 题——四组各一条，另加两条衍生。网址后加 ?seed=2026 可固定同一套。本页不联网、不外链。",
+      "題庫 21 題：15 條情景題 + 6 條衍生題；每次固定抽 6 題——四組各一條，另加兩條衍生。網址後加 ?seed=2026 可固定同一套。本頁不聯網、不外鏈。",
+      "21 items: 15 scenario + 6 derivation. Every set draws 6 — one from each scenario group plus two derivation items. Add ?seed=2026 to pin the same set. No network requests, no outbound links."
     ]
   };
 
-  var G = {A:"gA", B:"gB", C:"gC", D:"gD"};
-  var ORDER = ["A","B","C","D"];
+  var G = {A:"gA", B:"gB", C:"gC", D:"gD", E:"gE"};
+  var ORDER = ["A","B","C","D","E"];
   var TAKE = 6;
 
   /* ============ 题库：每题 t / o / why / x 都是 [简, 繁, 英] ============ */
@@ -2218,6 +2227,402 @@
           ]
         }
       ]
+    },
+    {
+      "g": "E",
+      "kind": "derive",
+      "ref": "D1",
+      "a": 1,
+      "t": [
+        "玩过这一周之后：少买、少扔，究竟是为了什么？",
+        "玩過這一週之後：少買、少扔，究竟是為了什麼？",
+        "After playing the week: what are you actually buying when you cut waste?"
+      ],
+      "o": [
+        [
+          "为了让报表上的数字好看一点",
+          "為了讓報表上的數字好看一點",
+          "So the numbers in the report look better"
+        ],
+        [
+          "为了让日子能长期过下去，而且过得体面，不是勉强凑合",
+          "為了讓日子能長期過下去，而且過得體面，不是勉強湊合",
+          "So daily life keeps working over the long run, and stays decent rather than scraping by"
+        ],
+        [
+          "因为环保是每个人的责任，不做就是不对",
+          "因為環保是每個人的責任，不做就是不對",
+          "Because protecting the environment is everyone’s duty, and not doing it is wrong"
+        ],
+        [
+          "为了把钱省下来，将来换一台更大的冰箱",
+          "為了把錢省下來，將來換一台更大的冰箱",
+          "So the money saved can buy a bigger fridge later"
+        ]
+      ],
+      "why": [
+        "可持续不是抽象口号：它要回答的是「这样的日子能不能一直过下去、还愿不愿意过」。只把支出压到最低、餐桌却越来越将就，那笔账并没有真的省。",
+        "永續不是抽象口號：它要回答的是「這樣的日子能不能一直過下去、還願不願意過」。只把支出壓到最低、餐桌卻越來越將就，那筆帳並沒有真的省。",
+        "Sustainability is not a slogan: the question is whether this way of living can keep going, and whether you would still want it. Driving spending to the floor while the table gets sadder does not save anything."
+      ],
+      "x": [
+        [
+          "指标是给别人看的；指标好看和这顿饭好不好，是两件事。",
+          "指標是給別人看的；指標好看和這頓飯好不好，是兩件事。",
+          "Metrics are for other people; a good metric and a good dinner are two different things."
+        ],
+        [
+          "",
+          "",
+          ""
+        ],
+        [
+          "喊责任不用想，也不用改任何做法 —— 所以它解释不了任何事。",
+          "喊責任不用想，也不用改任何做法 —— 所以它解釋不了任何事。",
+          "Duty-talk needs no thought and changes no behaviour, so it explains nothing."
+        ],
+        [
+          "把省下的资源换成更耗电的设备，是往回走。",
+          "把省下的資源換成更耗電的設備，是往回走。",
+          "Trading saved resources for a more power-hungry appliance walks backwards."
+        ]
+      ],
+      "tag": [
+        "slogan",
+        "mech",
+        "slogan",
+        "wrong"
+      ]
+    },
+    {
+      "g": "E",
+      "kind": "derive",
+      "ref": "H2",
+      "a": 1,
+      "t": [
+        "同一只鸡腿，为什么「蒸」常被认为比「煎炸」省资源？",
+        "同一隻雞腿，為什麼「蒸」常被認為比「煎炸」省資源？",
+        "Same chicken leg — why is steaming usually treated as lighter on resources than frying?"
+      ],
+      "o": [
+        [
+          "因为蒸的温度低，所以完全不消耗能源",
+          "因為蒸的溫度低，所以完全不消耗能源",
+          "Because steaming runs cooler, so it uses no energy at all"
+        ],
+        [
+          "因为蒸汽把热量几乎都送到食物里；水煮会把水溶性维生素泡进水里；油炸既要大量油，油还会被食物吸进去",
+          "因為蒸汽把熱量幾乎都送到食物裡；水煮會把水溶性維生素泡進水裡；油炸既要大量油，油還會被食物吸進去",
+          "Because steam delivers nearly all its heat to the food; boiling leaches water-soluble vitamins into the water; frying burns a lot of oil and the food absorbs some of it"
+        ],
+        [
+          "因为蒸是传统做法，传统做法更环保",
+          "因為蒸是傳統做法，傳統做法更環保",
+          "Because steaming is traditional, and traditional methods are greener"
+        ],
+        [
+          "因为蒸锅比炒锅便宜",
+          "因為蒸鍋比炒鍋便宜",
+          "Because a steamer costs less than a wok"
+        ]
+      ],
+      "why": [
+        "热量怎么走、营养往哪儿跑、油最后进了谁的身体 —— 三件事指向同一个方向：蒸的燃料利用率高，水煮有流失，油炸要先把油加热（油的热容大，等于多烧一份燃料），油又被食物吸走。",
+        "熱量怎麼走、營養往哪兒跑、油最後進了誰的身體 —— 三件事指向同一個方向：蒸的燃料利用率高，水煮有流失，油炸要先把油加熱（油的熱容大，等於多燒一份燃料），油又被食物吸走。",
+        "Where the heat goes, where the nutrients go, and where the oil ends up all point the same way: steam puts its heat into the food, boiling leaches into the water, and frying heats a whole pan of oil first — oil has a high heat capacity, so you pay for it twice — and the food takes some of that oil with it."
+      ],
+      "x": [
+        [
+          "温度低不等于不耗能：烧水照样要燃料，只是没有额外那一锅油。",
+          "溫度低不等於不耗能：燒水照樣要燃料，只是沒有額外那一鍋油。",
+          "Cooler is not free: boiling water still burns fuel, just not a second pan of oil."
+        ],
+        [
+          "",
+          "",
+          ""
+        ],
+        [
+          "搬出「传统」就不用解释机制了 —— 传统做法里也有很费柴的。",
+          "搬出「傳統」就不用解釋機制了 —— 傳統做法裡也有很費柴的。",
+          "Invoking tradition skips the mechanism — plenty of traditional methods are fuel-hungry."
+        ],
+        [
+          "锅具价格说的是钱包，不是燃料和油。",
+          "鍋具價格說的是錢包，不是燃料和油。",
+          "Pot prices say something about your wallet, not about fuel and oil."
+        ]
+      ],
+      "tag": [
+        "wrong",
+        "mech",
+        "slogan",
+        "wrong"
+      ]
+    },
+    {
+      "g": "E",
+      "kind": "derive",
+      "ref": "R2",
+      "a": 1,
+      "t": [
+        "同样都要靠外地运来，为什么「邻近产区、当季」的菜，环境负担通常更低？",
+        "同樣都要靠外地運來，為什麼「鄰近產區、當季」的菜，環境負擔通常更低？",
+        "Both are shipped in — why is produce from a nearby region, in season, usually lighter?"
+      ],
+      "o": [
+        [
+          "因为邻近产区的菜一定更干净",
+          "因為鄰近產區的菜一定更乾淨",
+          "Because produce from nearby is always cleaner"
+        ],
+        [
+          "因为运距短、少一次冷藏、少几层包装 —— 省的就是这三段",
+          "因為運距短、少一次冷藏、少幾層包裝 —— 省的就是這三段",
+          "Because the haul is shorter, it needs less chilling and less packaging — those are the three things you save"
+        ],
+        [
+          "因为支持本地农业是一种美德",
+          "因為支持本地農業是一種美德",
+          "Because supporting local farmers is a virtue"
+        ],
+        [
+          "因为进口蔬菜要被征碳税",
+          "因為進口蔬菜要被徵碳稅",
+          "Because imported vegetables are taxed for carbon"
+        ]
+      ],
+      "why": [
+        "香港几乎没有本地农业，菜基本都靠外来。所以能挑的不是「本地还是进口」，而是「哪一段运距、要不要冷链、几层包装、是不是当季」。",
+        "香港幾乎沒有本地農業，菜基本都靠外來。所以能挑的不是「本地還是進口」，而是「哪一段運距、要不要冷鏈、幾層包裝、是不是當季」。",
+        "Hong Kong grows almost nothing, so everything is imported. The real choice is not local versus imported, but how far it travelled, whether it needed a cold chain, how much packaging, and whether it is in season."
+      ],
+      "x": [
+        [
+          "干净与否是农药和清洗的问题，跟运距无关。",
+          "乾淨與否是農藥和清洗的問題，跟運距無關。",
+          "Cleanliness is about pesticides and washing, not distance."
+        ],
+        [
+          "",
+          "",
+          ""
+        ],
+        [
+          "美德讲的是你这个人，讲不出这三段省在哪。",
+          "美德講的是你這個人，講不出這三段省在哪。",
+          "Virtue describes you, not where the three savings come from."
+        ],
+        [
+          "碳税是政策设想，不是现在的价格构成。",
+          "碳稅是政策設想，不是現在的價格構成。",
+          "A carbon tariff is a policy proposal, not part of today’s price."
+        ]
+      ],
+      "tag": [
+        "wrong",
+        "mech",
+        "slogan",
+        "wrong"
+      ]
+    },
+    {
+      "g": "E",
+      "kind": "derive",
+      "ref": "R7",
+      "a": 1,
+      "t": [
+        "省下来的钱，为什么不能直接算成少掉的排放？",
+        "省下來的錢，為什麼不能直接算成少掉的排放？",
+        "Why doesn’t money saved count directly as emissions avoided?"
+      ],
+      "o": [
+        [
+          "因为钱和碳是两套单位，本来就没法比",
+          "因為錢和碳是兩套單位，本來就沒法比",
+          "Because money and carbon are different units and simply cannot be compared"
+        ],
+        [
+          "因为省下的钱往往会被花到别处，那部分又产生新的排放",
+          "因為省下的錢往往會被花到別處，那部分又產生新的排放",
+          "Because the money saved tends to get spent elsewhere, and that spending produces emissions of its own"
+        ],
+        [
+          "因为节俭是美德，不该用排放来衡量",
+          "因為節儉是美德，不該用排放來衡量",
+          "Because thrift is a virtue and should not be measured in emissions"
+        ],
+        [
+          "因为排放只算企业，不算家庭",
+          "因為排放只算企業，不算家庭",
+          "Because emissions are counted for companies, not households"
+        ]
+      ],
+      "why": [
+        "这叫回弹：省下一笔，钱不会消失，它换个地方花，可能买更耗电的东西，也可能只是多买几件。算账时要问的是「这笔钱之后去了哪」。",
+        "這叫回彈：省下一筆，錢不會消失，它換個地方花，可能買更耗電的東西，也可能只是多買幾件。算帳時要問的是「這筆錢之後去了哪」。",
+        "This is rebound: the money does not vanish, it gets spent somewhere — maybe on something more power-hungry, maybe just on more things. The question is where it goes next."
+      ],
+      "x": [
+        [
+          "单位不同只说明不能直接换算，不说明这笔钱没有后果。",
+          "單位不同只說明不能直接換算，不說明這筆錢沒有後果。",
+          "Different units mean you cannot convert directly, not that the money has no effect."
+        ],
+        [
+          "",
+          "",
+          ""
+        ],
+        [
+          "美德说明你是什么样的人，说明不了这笔钱去了哪。",
+          "美德說明你是什麼樣的人，說明不了這筆錢去了哪。",
+          "Virtue says what kind of person you are, not where the money went."
+        ],
+        [
+          "家庭用电和用油都在排放账上，只是分散在很多小决定里。",
+          "家庭用電和用油都在排放帳上，只是分散在很多小決定裡。",
+          "Household electricity and fuel are on the emissions ledger too, spread across many small decisions."
+        ]
+      ],
+      "tag": [
+        "wrong",
+        "mech",
+        "slogan",
+        "wrong"
+      ]
+    },
+    {
+      "g": "E",
+      "kind": "derive",
+      "ref": "F1",
+      "a": 1,
+      "t": [
+        "校服脱线，先补一补，从资源角度看省的是什么？",
+        "校服脫線，先補一補，從資源角度看省的是什麼？",
+        "A school uniform seam has come apart — mending it saves what, exactly?"
+      ],
+      "o": [
+        [
+          "因为旧衣服本来就比新衣服结实",
+          "因為舊衣服本來就比新衣服結實",
+          "Because old clothes are sturdier than new ones"
+        ],
+        [
+          "因为一件新衣的原料、染整、运输，都要摊在穿着次数上；补一次只多花针线和一点时间",
+          "因為一件新衣的原料、染整、運輸，都要攤在穿著次數上；補一次只多花針線和一點時間",
+          "Because a new garment’s fibre, dyeing and shipping all get spread across the times you wear it; a repair costs thread and a little time"
+        ],
+        [
+          "因为节俭朴素是一种美德",
+          "因為節儉樸素是一種美德",
+          "Because thrift and plain living are virtues"
+        ],
+        [
+          "因为旧衣服洗过之后就不掉色了",
+          "因為舊衣服洗過之後就不掉色了",
+          "Because old clothes stop bleeding dye once washed"
+        ]
+      ],
+      "why": [
+        "账要摊到「每次穿着」上：新衣那三笔一次付清，补衣只加一小笔。用得越久，摊得越薄。",
+        "帳要攤到「每次穿著」上：新衣那三筆一次付清，補衣只加一小筆。用得越久，攤得越薄。",
+        "Spread the cost over wears: a new garment pays fibre, dyeing and shipping up front; a repair adds a small amount. The longer it lasts, the thinner it spreads."
+      ],
+      "x": [
+        [
+          "结实与否是布料的事，跟补还是买无关。",
+          "結實與否是布料的事，跟補還是買無關。",
+          "Sturdiness is a property of the fabric, not of mending versus buying."
+        ],
+        [
+          "",
+          "",
+          ""
+        ],
+        [
+          "美德又一次替你把账算完了 —— 但它没告诉你省的是哪三笔。",
+          "美德又一次替你把帳算完了 —— 但它沒告訴你省的是哪三筆。",
+          "Virtue does the arithmetic for you again, without naming the three costs saved."
+        ],
+        [
+          "掉色是染整问题，不是补衣带来的。",
+          "掉色是染整問題，不是補衣帶來的。",
+          "Dye bleeding is a dyeing issue, not something mending causes."
+        ]
+      ],
+      "tag": [
+        "wrong",
+        "mech",
+        "slogan",
+        "wrong"
+      ]
+    },
+    {
+      "g": "E",
+      "kind": "derive",
+      "ref": "D1",
+      "a": 1,
+      "t": [
+        "下面四句里，哪一句只是口号，当不了理由？",
+        "下面四句裡，哪一句只是口號，當不了理由？",
+        "Which of these four is a slogan rather than a reason?"
+      ],
+      "o": [
+        [
+          "少点一次外卖，就少一套一次性餐具、少一趟配送",
+          "少點一次外賣，就少一套一次性餐具、少一趟配送",
+          "Ordering takeaway once less means one less set of disposables and one less delivery run"
+        ],
+        [
+          "保护地球，人人有责",
+          "保護地球，人人有責",
+          "Protecting the planet is everyone’s responsibility"
+        ],
+        [
+          "前一晚多煮一份，第二天带走，就少一次外食",
+          "前一晚多煮一份，第二天帶走，就少一次外食",
+          "Cook an extra portion the night before and you skip one meal bought out"
+        ],
+        [
+          "把剩菜写进明天的菜单，就不容易放到坏",
+          "把剩菜寫進明天的菜單，就不容易放到壞",
+          "Write leftovers into tomorrow’s menu and they are less likely to spoil"
+        ]
+      ],
+      "why": [
+        "口号的特征是不指向任何具体动作：它不告诉你要改哪一步，也不告诉你改了之后哪本账会动。另外三句都能指到一个动作和它省下的那一份。",
+        "口號的特徵是不指向任何具體動作：它不告訴你要改哪一步，也不告訴你改了之後哪本帳會動。另外三句都能指到一個動作和它省下的那一份。",
+        "A slogan points at no specific action: it does not say which step to change, nor which ledger moves afterwards. The other three each name an action and what it saves."
+      ],
+      "x": [
+        [
+          "这句指得出动作（少点一次）和它省下的东西（餐具、配送）。",
+          "這句指得出動作（少點一次）和它省下的東西（餐具、配送）。",
+          "This names the action and what it saves."
+        ],
+        [
+          "",
+          "",
+          ""
+        ],
+        [
+          "这句指得出动作（多煮一份）和它省下的东西（一次外食）。",
+          "這句指得出動作（多煮一份）和它省下的東西（一次外食）。",
+          "This names the action and what it saves."
+        ],
+        [
+          "这句指得出动作（写进菜单）和它省下的东西（不放到坏）。",
+          "這句指得出動作（寫進菜單）和它省下的東西（不放到壞）。",
+          "This names the action and what it saves."
+        ]
+      ],
+      "tag": [
+        "mech",
+        "slogan",
+        "mech",
+        "mech"
+      ]
     }
   ];
 
@@ -2320,14 +2725,17 @@
   }
 
   function drawSet(){
-    var byG = {A:[], B:[], C:[], D:[]};
+    var byG = {A:[], B:[], C:[], D:[], E:[]};
     for (var i = 0; i < Q.length; i++) byG[Q[i].g].push(i);
 
     var out = [];
-    for (var k = 0; k < ORDER.length; k++){
+    // 四组各抽一条情景题，剩下两个名额给衍生题
+    for (var k = 0; k < 4; k++){
       var arr = shuffle(byG[ORDER[k]].slice());
       out.push(arr[0]);
     }
+    var e = shuffle(byG["E"].slice());
+    out.push(e[0]); out.push(e[1]);
     var rest = [];
     for (var i2 = 0; i2 < Q.length; i2++) if (out.indexOf(i2) < 0) rest.push(i2);
     shuffle(rest);
@@ -2404,17 +2812,25 @@
     }
 
     var fb = art.querySelector(".fb");
-    var head = pick < 0 ? T(UI.revNone) : T(UI.revHead).replace("%s", LB[pick]);
+    var head = pick < 0 ? T(UI.revNone) : T(q.kind === "derive" ? UI.revHeadD : UI.revHead).replace("%s", LB[pick]);
     var s2 = '<div class="verdict">' + esc(head) + '</div><div class="rev">';
 
     for (var r = 0; r < q.o.length; r++){
       var note = (r === q.a) ? q.why : (q.x[r] || q.why);
       var cls = (r === pick) ? "revrow chosen" : "revrow";
+      var cell;
+      if (q.kind === "derive"){
+        var tg = (q.tag && q.tag[r]) || "mech";
+        var lab = tg === "mech" ? T(UI.tMech) : (tg === "slogan" ? T(UI.tSlogan) : T(UI.tWrong));
+        cell = '<span class="chip ' + tg + '">' + esc(lab) + '</span>';
+      } else {
+        cell = '<span class="fxtext">' + esc(fxLine(q.fx && q.fx[r])) + '</span>';
+      }
       s2 += '<div class="' + cls + '">' +
             '<span class="badge">' + LB[r] + '</span>' +
             '<div class="revbody">' +
               '<div class="revtext">' + esc(T(q.o[r])) + '</div>' +
-              '<div class="revfx">' + esc(fxLine(q.fx[r])) + '</div>' +
+              '<div class="revfx">' + cell + '</div>' +
               '<div class="revnote">' + esc(T(note)) + '</div>' +
             '</div></div>';
     }
