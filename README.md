@@ -5,6 +5,17 @@
 
 > 详细文档在 [`docs/`](docs/README.md)。这份 README 只回答「是什么、怎么跑、东西在哪」。
 
+## 不想装任何东西？
+
+到 [Releases](https://github.com/Ja-Treffer/Food-basket-in-a-week/releases/latest) 下：
+
+| 文件 | 用法 |
+|---|---|
+| `One-Week-Basket.exe` | Windows 单文件，双击即玩（约 46 MB，pck 已内嵌） |
+| `one-week-basket-web.zip` | 解压丢到任意静态站，**必须走 http(s)**，双击 `index.html` 打不开 |
+
+构建产物不进仓库（`.gitignore` 里挡着 `godot/build/`），要自己出新版见 [`docs/04-build.md`](docs/04-build.md)。
+
 ## 怎么跑
 
 | 想做什么 | 命令 |
