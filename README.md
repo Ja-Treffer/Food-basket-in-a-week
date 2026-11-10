@@ -64,7 +64,7 @@ one-week-basket-web.zip   5e1b19c13b2b9bb6e948b7c998ccd8e0cf836a1617fba0e8fe2bdc
 Simplified Chinese · Traditional Chinese · English. Pick on the title screen, or switch any time from the top-right corner.
 All copy lives in `data/game-i18n.json` (594 entries of `{zh,tw,en}`) and is shared by the browser build, the live quiz and the Godot build.
 
-Default language follows the browser/OS locale: Chinese browsers get Chinese, everything else gets English. Force it with `?lang=zh|tw|en`.
+Default language is **English**; switch with the dropdown or `?lang=zh|tw|en` (the choice is remembered).
 
 ## Layout
 
