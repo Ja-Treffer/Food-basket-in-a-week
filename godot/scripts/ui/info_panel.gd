@@ -9,14 +9,14 @@ signal closed
 
 const PANEL := Vector2(1000, 620)
 
-var _font: SystemFont
+var _font: Font
 var _title: Label
 var _body: RichTextLabel
 var _panel: Panel
 var _close: Button
 
 
-func setup(font: SystemFont) -> void:
+func setup(font: Font) -> void:
 	_font = font
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_STOP

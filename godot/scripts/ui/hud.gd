@@ -11,7 +11,7 @@ const PAD_X := 40
 const PAD_Y := 26
 const BAR_W := 130
 
-var _font: SystemFont
+var _font: Font
 var _day: Label
 var _place: Label
 var _bars: Dictionary = {}
@@ -21,7 +21,7 @@ var _lang: OptionButton
 var _info_btn: Button
 
 
-func setup(font: SystemFont, lang: int) -> void:
+func setup(font: Font, lang: int) -> void:
 	_font = font
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE

@@ -31,7 +31,7 @@ var _has_opts: bool = false
 var _opt_count: int = 0
 var hint_text: String = "点击继续"
 var _full: String = ""
-var _font: SystemFont
+var _font: Font
 
 
 func _ready() -> void:

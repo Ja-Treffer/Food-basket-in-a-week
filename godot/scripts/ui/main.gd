@@ -10,7 +10,7 @@ const DATA_PATH := "res://data/game.json"
 const I18N_PATH := "res://data/game-i18n.json"
 
 var presenter: Presenter
-var _font: SystemFont
+var _font: Font
 
 
 func _ready() -> void:
@@ -131,5 +131,13 @@ func _lang_id(v: String) -> int:
 			return 1
 		"2", "en":
 			return 2
-		_:
+		"0", "zh", "zh-hans", "cn", "简":
 			return 0
+		_:
+			# 没指定就看系统语言：中文系统给中文，其余默认英文。
+			var loc := OS.get_locale().to_lower()
+			if loc.begins_with("zh"):
+				if loc.contains("hant") or loc.contains("tw") or loc.contains("hk"):
+					return 1
+				return 0
+			return 2

@@ -18,7 +18,7 @@ signal lang_picked(idx: int)
 const PLATE := Vector2(620, 404)
 const LANGS := ["简体", "繁體", "EN"]
 
-var _font: SystemFont
+var _font: Font
 var _title: Label
 var _sub: Label
 var _start: Button
@@ -27,7 +27,7 @@ var _lang_btns: Array = []
 var _lang: int = 0
 
 
-func setup(font: SystemFont, texts: Dictionary, lang: int) -> void:
+func setup(font: Font, texts: Dictionary, lang: int) -> void:
 	_font = font
 	_lang = lang
 	set_anchors_preset(Control.PRESET_FULL_RECT)

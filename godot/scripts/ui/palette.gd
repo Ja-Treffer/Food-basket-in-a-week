@@ -25,8 +25,17 @@ const AXIS_ORDER := ["p", "s", "c", "m"]
 const GOLD := Color("#c58a3a")
 const BLUE := Color("#3d6480")
 
-## 中文走系统字体：不打包字体文件，Windows / macOS / Linux 都能落一个。
-static func font() -> SystemFont:
+## 字体：优先用随包带的思源黑体子集（Web 版没有系统字体，只能自带）；
+## 万一资源缺失再退回系统字体（桌面端还能跑起来）。
+const FONT_PATH := "res://assets/fonts/NotoSansSC-subset.ttf"
+
+static func font() -> Font:
+	if ResourceLoader.exists(FONT_PATH):
+		var ff := load(FONT_PATH) as FontFile
+		if ff != null:
+			ff.antialiasing = TextServer.FONT_ANTIALIASING_GRAY
+			ff.subpixel_positioning = TextServer.SUBPIXEL_POSITIONING_DISABLED
+			return ff
 	var f := SystemFont.new()
 	f.font_names = PackedStringArray([
 		"Microsoft YaHei UI", "微软雅黑", "PingFang SC",

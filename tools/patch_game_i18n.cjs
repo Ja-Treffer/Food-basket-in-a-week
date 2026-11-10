@@ -32,7 +32,10 @@ const block = `<!-- G18N:START -->
       if (v === '2' || v === 'en') return 2;
     }
     try { var s = localStorage.getItem(KEY); if (s !== null && +s >= 0 && +s <= 2) return +s; } catch(e){}
-    return 0;
+    // 没选过就看浏览器：中文浏览器给简体 / 繁体，其余默认英文。
+    var nav = (navigator.language || navigator.userLanguage || '').toLowerCase();
+    if (nav.indexOf('zh') === 0) return (nav.indexOf('hant') >= 0 || nav.indexOf('tw') >= 0 || nav.indexOf('hk') >= 0) ? 1 : 0;
+    return 2;
   }
 
   function esc(s){ return s.replace(/[.*+?^\${}()|[\\]\\\\]/g, '\\\\$&'); }

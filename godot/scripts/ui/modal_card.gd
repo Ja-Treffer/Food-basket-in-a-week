@@ -13,7 +13,7 @@ var _text: Label
 var _button: Button
 
 
-func setup(font: SystemFont) -> void:
+func setup(font: Font) -> void:
 	set_anchors_preset(Control.PRESET_FULL_RECT)
 	hide()
 
