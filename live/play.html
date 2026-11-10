@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>三日菜篮 · 现场答题</title>
+<style>
+  :root{
+    --bg:#f5f3ed;--paper:#fffefb;--ink:#23211e;--muted:#6d685f;--line:#d9d4c8;
+    --good:#3f7461;--bad:#b8503f;--blue:#3d6480;--soft:#ece8dc;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:17px/1.6 system-ui,-apple-system,"Segoe UI","Microsoft YaHei","PingFang SC",sans-serif}
+  button,select{font:inherit;cursor:pointer}
+  .wrap{max-width:620px;margin:0 auto;padding:16px 16px 40px}
+  h1{font-size:19px;margin:6px 0 14px;letter-spacing:.04em}
+  .top{display:flex;align-items:center;gap:10px}
+  .top h1{flex:1}
+  .top select{font-size:13px;color:var(--muted);background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:5px 8px}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:18px 16px;
+    box-shadow:0 2px 0 #d5cfc0,0 10px 24px rgba(60,52,38,.07)}
+  label{display:block;font-size:13px;color:var(--muted);margin:2px 0 6px;letter-spacing:.06em}
+  input{width:100%;padding:13px 14px;font-size:19px;border:1.5px solid var(--line);border-radius:8px;
+    background:#fff;color:var(--ink);margin-bottom:14px}
+  input:focus{outline:none;border-color:var(--ink)}
+  .primary{width:100%;background:var(--ink);color:#fff;border:1px solid var(--ink);
+    padding:15px;border-radius:9px;font-weight:700;font-size:18px}
+  .primary:disabled{opacity:.35}
+  .err{color:var(--bad);font-size:14px;min-height:20px;margin-top:8px}
+
+  .qtag{font-size:13px;letter-spacing:.14em;color:var(--muted)}
+  .qtext{font-size:22px;font-weight:700;line-height:1.5;margin:8px 0 18px}
+  .opts{display:grid;gap:10px}
+  .opt{display:flex;gap:12px;align-items:center;text-align:left;width:100%;
+    border:1.5px solid var(--line);border-radius:10px;padding:15px 14px;background:#fbf9f3;color:var(--ink);
+    font-size:17px;line-height:1.45;transition:border-color .15s,background .15s}
+  .opt:active{background:#f0ebdc}
+  .opt .k{width:30px;height:30px;flex:none;border:1.5px solid var(--muted);border-radius:50%;
+    display:grid;place-items:center;font-size:15px;color:var(--muted);background:var(--paper)}
+  .opt.mine{border-color:var(--blue);background:#eff4f7}
+  .opt.mine .k{border-color:var(--blue);color:#fff;background:var(--blue)}
+  .opt.right{border-color:var(--good);background:#eef4f0}
+  .opt.right .k{border-color:var(--good);color:#fff;background:var(--good)}
+  .opt.lock{pointer-events:none;opacity:.75}
+  .opt .n{margin-left:auto;font:700 15px/1 ui-monospace,Consolas,monospace;color:var(--muted)}
+
+  .wait{text-align:center;padding:26px 0;color:var(--muted)}
+  .big{font-size:44px;text-align:center;font-weight:700;letter-spacing:.06em;margin:6px 0}
+  .verdict{font-size:24px;font-weight:700;margin:14px 0 4px}
+  .verdict.ok{color:var(--good)}
+  .verdict.no{color:var(--bad)}
+  .why{border-top:1px dashed var(--line);margin-top:14px;padding-top:13px;font-size:15.5px;line-height:1.8}
+  .why .x{border-left:3px solid var(--bad);padding-left:11px;margin-top:10px;color:#4a463f}
+  .ref{font-size:12.5px;color:var(--muted);margin-top:8px}
+  .hidden{display:none !important}
+  .me{font-size:13px;color:var(--muted);margin-top:10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <h1 id="h1">三日菜篮 · 现场答题</h1>
+    <select id="lang" aria-label="语言">
+      <option value="0">简体</option>
+      <option value="1">繁體</option>
+      <option value="2">EN</option>
+    </select>
+  </div>
+
+  <!-- 加入 -->
+  <section class="card" id="joinCard">
+    <label id="pinLabel">加入码</label>
+    <input id="pinInput" inputmode="numeric" maxlength="4" placeholder="四位数字" autocomplete="off">
+    <label id="nameLabel">你的名字（会显示在主持人屏幕上）</label>
+    <input id="nameInput" maxlength="12" placeholder="例如：阿明" autocomplete="off">
+    <button class="primary" id="joinBtn">进入</button>
+    <div class="err" id="err"></div>
+  </section>
+
+  <!-- 等待 -->
+  <section class="card hidden" id="waitCard">
+    <div class="wait">
+      <div class="big" id="waitName"></div>
+      <div id="waitNote">已经进来了，等主持人开始。</div>
+      <div class="me" id="waitPinLine"></div>
+    </div>
+  </section>
+
+  <!-- 答题 -->
+  <section class="card hidden" id="qCard">
+    <div class="qtag" id="qtag"></div>
+    <div class="qtext" id="qtext"></div>
+    <div class="opts" id="opts"></div>
+    <div class="wait hidden" id="submitted">已经提交，等其他人。</div>
+    <div class="why hidden" id="why"></div>
+  </section>
+</div>
+
+<script>
+(function(){
+  'use strict';
+  var $ = function(id){ return document.getElementById(id); };
+  var pin = '', pid = '', myName = '', es = null;
+  var curQ = -1, curState = '', answered = false, lastSnap = null;
+
+  /* ---------- 三语表 ---------- */
+  var UI = {
+    docTitle:['三日菜篮 · 现场答题','三日菜籃 · 現場答題','Three-Day Basket · Live Quiz'],
+    h1:['三日菜篮 · 现场答题','三日菜籃 · 現場答題','Three-Day Basket · Live Quiz'],
+    pinLabel:['加入码','加入碼','Game PIN'],
+    pinPh:['四位数字','四位數字','four digits'],
+    nameLabel:['你的名字（会显示在主持人屏幕上）','你的名字（會顯示在主持人螢幕上）','Your name (shown on the host screen)'],
+    namePh:['例如：阿明','例如：阿明','e.g. Ming'],
+    enter:['进入','進入','Join'],
+    errPin:['加入码是四位数字。','加入碼是四位數字。','The PIN is four digits.'],
+    errName:['写个名字，主持人好认。','寫個名字，主持人好認。','Add a name so the host can tell you apart.'],
+    errNet:['连不上后端，确认服务器开着。','連不上後端，確認伺服器開著。','Cannot reach the server; check that it is running.'],
+    waitNote:['已经进来了，等主持人开始。','已經進來了，等主持人開始。','You are in. Waiting for the host to start.'],
+    pinCode:['加入码','加入碼','PIN'],
+    qtag:['第 %a / %b 题','第 %a / %b 題','Question %a / %b'],
+    submitted:['已经提交，等其他人。','已經提交，等其他人。','Answer sent. Waiting for the others.'],
+    allDone:['全部结束','全部結束','All done'],
+    doneText:['这一局答完了。没有分数、没有排名，只有每一题为什么这样做。','這一局答完了。沒有分數、沒有排名，只有每一題為什麼這樣做。','That is the end. No score, no ranking — just why each thing is done this way.'],
+    noAnswer:['这一题没有作答','這一題沒有作答','You did not answer this one'],
+    okv:['✓ 选对了','✓ 選對了','✓ Correct'],
+    nov:['× 不是这一项','× 不是這一項','× Not this one'],
+    correct:['正确答案','正確答案','Correct answer'],
+    yourPick:['你选的那一项：','你選的那一項：','Your pick: '],
+    src:['依据','依據','Source'],
+    people:['人','人','']
+  };
+  var LIDX = 0;
+  function T(v){ return Array.isArray(v) ? (v[LIDX] || v[0]) : (v == null ? '' : v); }
+  function F(v, a, b){
+    return T(v).replace('%a', a == null ? '' : a).replace('%b', b == null ? '' : b);
+  }
+  function refText(r){
+    return Array.isArray(r) ? r.join(' / ') : (r == null ? '' : String(r));
+  }
+
+  function loadLang(){
+    var m = /[?&]lang=([^&]+)/.exec(location.search);
+    if (m){
+      var v = decodeURIComponent(m[1]).toLowerCase();
+      if (v === '0' || v === 'zh' || v === 'zh-hans' || v === 'cn') return 0;
+      if (v === '1' || v === 'tw' || v === 'zh-tw' || v === 'zh-hant') return 1;
+      if (v === '2' || v === 'en') return 2;
+    }
+    try { var s = localStorage.getItem('cailan.live.lang'); if (s !== null && +s >= 0 && +s <= 2) return +s; } catch(e){}
+    return 0;
+  }
+
+  function applyLang(){
+    document.documentElement.lang = ['zh-Hans','zh-Hant','en'][LIDX];
+    document.title = T(UI.docTitle);
+    $('h1').textContent = T(UI.h1);
+    $('pinLabel').textContent = T(UI.pinLabel);
+    $('pinInput').placeholder = T(UI.pinPh);
+    $('nameLabel').textContent = T(UI.nameLabel);
+    $('nameInput').placeholder = T(UI.namePh);
+    $('joinBtn').textContent = T(UI.enter);
+    $('waitNote').textContent = T(UI.waitNote);
+    $('waitPinLine').innerHTML = esc(T(UI.pinCode)) + ' <b id="waitPin"></b>';
+    if(pin) $('waitPin').textContent = pin;
+    $('submitted').textContent = T(UI.submitted);
+    $('lang').value = String(LIDX);
+  }
+
+  function esc(s){ var d=document.createElement('div'); d.textContent=String(s==null?'':s); return d.innerHTML; }
+
+  /* 回填 */
+  var savedPin = localStorage.getItem('cailan.pin');
+  if(savedPin) $('pinInput').value = savedPin;
+  if(location.search.indexOf('pin=') > -1) $('pinInput').value = new URLSearchParams(location.search).get('pin');
+
+  function join(){
+    var p = $('pinInput').value.trim();
+    var n = $('nameInput').value.trim();
+    if(!/^\d{4}$/.test(p)){ $('err').textContent = T(UI.errPin); return; }
+    if(!n){ $('err').textContent = T(UI.errName); return; }
+    $('err').textContent = '';
+    fetch('/api/join', {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({pin:p, name:n})}).then(function(r){ return r.json(); }).then(function(d){
+      if(d.error){ $('err').textContent = d.error; return; }
+      pin = p; pid = d.pid; myName = d.name;
+      localStorage.setItem('cailan.pin', pin);
+      localStorage.setItem('cailan.pid.'+pin, pid);
+      localStorage.setItem('cailan.name', myName);
+      $('waitName').textContent = myName;
+      var wp = $('waitPin'); if(wp) wp.textContent = pin;
+      $('joinCard').classList.add('hidden');
+      $('waitCard').classList.remove('hidden');
+      connect();
+    }).catch(function(){ $('err').textContent = T(UI.errNet); });
+  }
+
+  function connect(){
+    if(es) es.close();
+    es = new EventSource('/api/stream?role=player&pin='+encodeURIComponent(pin)+'&pid='+encodeURIComponent(pid));
+    es.onmessage = function(e){ if(e.data) apply(JSON.parse(e.data)); };
+  }
+
+  function apply(s){
+    lastSnap = s;
+    if(s.state !== 'lobby') $('joinCard').classList.add('hidden');
+    if(s.state === 'lobby'){
+      $('waitCard').classList.remove('hidden');
+      $('qCard').classList.add('hidden');
+      return;
+    }
+    if(s.state === 'done'){
+      $('qCard').classList.remove('hidden');
+      $('waitCard').classList.add('hidden');
+      $('qtag').textContent = T(UI.allDone);
+      $('qtext').textContent = T(UI.doneText);
+      $('opts').innerHTML = '';
+      $('submitted').classList.add('hidden');
+      $('why').classList.add('hidden');
+      return;
+    }
+
+    $('waitCard').classList.add('hidden');
+    $('qCard').classList.remove('hidden');
+
+    var fresh = (curQ !== s.qIndex || curState !== s.state || $('qtext').textContent !== T(s.item.t));
+    if(fresh){
+      curQ = s.qIndex; curState = s.state;
+      answered = !!s.hasAnswered;
+      $('qtag').textContent = F(UI.qtag, s.qIndex+1, s.total);
+      $('qtext').textContent = T(s.item.t);
+      $('opts').innerHTML = s.item.o.map(function(t,i){
+        return '<button class="opt" data-k="'+i+'"><span class="k">'+'ABCD'[i]+'</span>'+
+          '<span class="t">'+esc(T(t))+'</span><span class="n"></span></button>';
+      }).join('');
+      $('why').classList.add('hidden');
+      $('submitted').classList.toggle('hidden', !answered);
+      Array.prototype.forEach.call(document.querySelectorAll('.opt'), function(b){
+        b.onclick = function(){ answer(parseInt(b.getAttribute('data-k'),10)); };
+      });
+    }
+
+    if(s.state === 'question'){
+      Array.prototype.forEach.call(document.querySelectorAll('.opt'), function(b){
+        var k = +b.getAttribute('data-k');
+        b.classList.toggle('mine', s.myChoice === k);
+        b.classList.toggle('lock', s.hasAnswered);
+      });
+      $('submitted').classList.toggle('hidden', !s.hasAnswered);
+      return;
+    }
+
+    /* 已公布 */
+    Array.prototype.forEach.call(document.querySelectorAll('.opt'), function(b){
+      var k = +b.getAttribute('data-k');
+      b.classList.add('lock');
+      b.classList.toggle('right', k === s.correct);
+      b.classList.toggle('mine', s.myChoice === k);
+      b.querySelector('.n').textContent = (s.counts[k]||0) + (LIDX === 2 ? '' : T(UI.people));
+    });
+    var mine = s.myChoice;
+    var ok = mine === s.correct;
+    var v = document.createElement('div');
+    v.className = 'verdict ' + (ok ? 'ok' : 'no');
+    v.textContent = mine === null ? T(UI.noAnswer) : (ok ? T(UI.okv) : T(UI.nov));
+    $('submitted').classList.add('hidden');
+    $('why').innerHTML = '';
+    $('why').appendChild(v);
+
+    var p1 = document.createElement('div');
+    p1.innerHTML = '<b>' + esc(T(UI.correct)) + '：' + 'ABCD'[s.correct] + '　' + esc(T(s.item.o[s.correct])) + '</b>';
+    $('why').appendChild(p1);
+
+    var p2 = document.createElement('div');
+    p2.style.marginTop = '8px';
+    p2.textContent = T(s.why);
+    $('why').appendChild(p2);
+
+    if(mine !== null && !ok && s.x && T(s.x[mine])){
+      var p3 = document.createElement('div');
+      p3.className = 'x';
+      p3.innerHTML = '<b>' + esc(T(UI.yourPick)) + '</b>' + esc(T(s.x[mine]));
+      $('why').appendChild(p3);
+    }
+    if(s.ref){
+      var p4 = document.createElement('div');
+      p4.className = 'ref';
+      p4.textContent = T(UI.src) + ' ' + refText(s.ref);
+      $('why').appendChild(p4);
+    }
+    $('why').classList.remove('hidden');
+  }
+
+  function answer(k){
+    if(answered) return;
+    answered = true;
+    Array.prototype.forEach.call(document.querySelectorAll('.opt'), function(b){
+      b.classList.toggle('mine', +b.getAttribute('data-k') === k);
+      b.classList.add('lock');
+    });
+    $('submitted').classList.remove('hidden');
+    fetch('/api/answer', {method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({pin:pin, pid:pid, q:curQ, c:k})}).then(function(r){ return r.json(); })
+      .then(function(d){ if(d.error) $('submitted').textContent = d.error; });
+  }
+
+  $('joinBtn').onclick = join;
+  $('nameInput').addEventListener('keydown', function(e){ if(e.key === 'Enter') join(); });
+  $('pinInput').addEventListener('keydown', function(e){ if(e.key === 'Enter') $('nameInput').focus(); });
+  $('lang').onchange = function(){
+    LIDX = +this.value || 0;
+    try { localStorage.setItem('cailan.live.lang', String(LIDX)); } catch(e){}
+    applyLang();
+    if(lastSnap){ curQ = -1; curState = ''; apply(lastSnap); }
+  };
+
+  /* 刷新后自动回到房间 */
+  var keepPid = pin || (savedPin ? localStorage.getItem('cailan.pid.'+savedPin) : null);
+  if(savedPin && keepPid){
+    pin = savedPin; pid = keepPid;
+    myName = localStorage.getItem('cailan.name') || '';
+    $('waitName').textContent = myName;
+    var wp = $('waitPin'); if(wp) wp.textContent = pin;
+    $('joinCard').classList.add('hidden');
+    $('waitCard').classList.remove('hidden');
+    connect();
+  }
+
+  LIDX = loadLang();
+  applyLang();
+})();
+</script>
+</body>
+</html>

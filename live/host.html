@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>三日菜篮 · 现场答题（主持端）</title>
+<style>
+  :root{
+    --bg:#f5f3ed;--paper:#fffefb;--ink:#23211e;--muted:#6d685f;--line:#d9d4c8;
+    --good:#3f7461;--bad:#b8503f;--blue:#3d6480;--warn:#b1792b;--soft:#ece8dc;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:16px/1.6 system-ui,-apple-system,"Segoe UI","Microsoft YaHei","PingFang SC",sans-serif}
+  button,select{font:inherit;cursor:pointer}
+  select{font-size:13px;color:var(--muted);background:var(--paper);border:1px solid var(--line);border-radius:999px;padding:4px 8px}
+  .wrap{max-width:1180px;margin:0 auto;padding:22px 26px 40px}
+  header{display:flex;align-items:baseline;gap:14px;border-bottom:2px solid var(--ink);padding-bottom:10px}
+  h1{font-size:22px;margin:0;letter-spacing:.04em}
+  .sp{flex:1}
+  .tag{font-size:13px;color:var(--muted)}
+  .pill{border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:13px;color:var(--muted);background:var(--paper)}
+  .pill.live{border-color:var(--good);color:var(--good)}
+
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:8px;
+    box-shadow:0 2px 0 #d5cfc0,0 10px 26px rgba(60,52,38,.07);padding:22px 26px;margin-top:16px}
+
+  /* 大厅 */
+  .pinbox{text-align:center;padding:26px 0 8px}
+  .pinlabel{font-size:14px;letter-spacing:.22em;color:var(--muted)}
+  .pin{font:700 88px/1 ui-monospace,Consolas,monospace;letter-spacing:.12em;margin:8px 0 4px}
+  .url{font-size:15px;color:var(--blue);font-variant-numeric:tabular-nums}
+  .players{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px;min-height:44px}
+  .chip{border:1px solid var(--line);border-radius:999px;padding:5px 13px;font-size:14px;background:#fbf9f3}
+  .chip.ok{border-color:var(--good);background:#eef4f0;color:var(--good)}
+  .chip.no{opacity:.5}
+
+  /* 题目 */
+  .qhead{display:flex;align-items:center;gap:16px;margin-bottom:6px}
+  .qno{font-size:14px;letter-spacing:.16em;color:var(--muted)}
+  .clock{margin-left:auto;font:700 40px/1 ui-monospace,Consolas,monospace;font-variant-numeric:tabular-nums;
+    color:var(--ink);min-width:86px;text-align:right}
+  .clock.warn{color:var(--bad)}
+  .qtext{font-size:30px;line-height:1.45;font-weight:700;margin:10px 0 22px}
+  .opts{display:grid;gap:11px}
+  .opt{position:relative;display:flex;gap:14px;align-items:center;
+    border:1.5px solid var(--line);border-radius:8px;padding:15px 18px;background:#fbf9f3;
+    font-size:20px;line-height:1.5;overflow:hidden;text-align:left;color:var(--ink)}
+  .opt .bar{position:absolute;left:0;top:0;bottom:0;width:0;background:#e9e3d3;transition:width .5s ease;z-index:0}
+  .opt .in{position:relative;z-index:1;display:flex;gap:14px;align-items:center;width:100%}
+  .opt .k{width:34px;height:34px;flex:none;border:1.5px solid var(--muted);border-radius:50%;
+    display:grid;place-items:center;font-size:16px;color:var(--muted);background:var(--paper)}
+  .opt .n{margin-left:auto;font:700 18px/1 ui-monospace,Consolas,monospace;color:var(--muted);opacity:0}
+  .opt.reveal .n{opacity:1}
+  .opt.right{border-color:var(--good);background:#eef4f0}
+  .opt.right .k{border-color:var(--good);color:#fff;background:var(--good)}
+  .opt.right .bar{background:#dcebe2}
+  .opt.mine{border-color:var(--blue)}
+  .foot{display:flex;align-items:center;gap:14px;margin-top:18px}
+  .primary{background:var(--ink);color:#fff;border:1px solid var(--ink);padding:10px 20px;border-radius:5px;font-weight:600}
+  .primary:hover{background:#3d3933}
+  .mini{background:transparent;border:1px solid var(--line);color:var(--muted);padding:8px 14px;border-radius:5px;font-size:14px}
+  .mini:hover{border-color:var(--ink);color:var(--ink)}
+  .note{font-size:14px;color:var(--muted)}
+  .why{margin-top:16px;border-top:1px dashed var(--line);padding-top:14px;font-size:16px;line-height:1.8}
+  .why b{color:var(--good)}
+  .why .x{border-left:3px solid var(--bad);padding-left:12px;margin-top:10px;color:#4a463f}
+  .why .ref{font-size:13px;color:var(--muted);margin-top:8px}
+  .hidden{display:none !important}
+  .done{text-align:center;padding:40px 0}
+  .done h2{font-size:34px;margin:0 0 10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1 id="h1">三日菜篮 · 现场答题</h1>
+    <span class="tag" id="roleTag">主持端</span>
+    <span class="sp"></span>
+    <select id="lang" aria-label="语言">
+      <option value="0">简体</option>
+      <option value="1">繁體</option>
+      <option value="2">EN</option>
+    </select>
+    <span class="pill" id="stateTag">连接中</span>
+    <button class="mini" id="resetBtn">重开一局</button>
+  </header>
+
+  <!-- 大厅 -->
+  <section class="card" id="lobby">
+    <div class="pinbox">
+      <div class="pinlabel" id="pinLabel">加入码</div>
+      <div class="pin" id="pin">----</div>
+      <div class="url" id="joinUrl"></div>
+    </div>
+    <div class="players" id="players"></div>
+    <div class="foot">
+      <button class="primary" id="startBtn"></button>
+      <span class="note" id="lobbyNote"></span>
+    </div>
+  </section>
+
+  <!-- 题目 -->
+  <section class="card hidden" id="quiz">
+    <div class="qhead">
+      <span class="qno" id="qno"></span>
+      <span class="pill" id="who"></span>
+      <span class="clock" id="clock">--</span>
+    </div>
+    <div class="qtext" id="qtext"></div>
+    <div class="opts" id="opts"></div>
+    <div class="why hidden" id="why"></div>
+    <div class="foot">
+      <button class="primary hidden" id="nextBtn"></button>
+      <button class="mini hidden" id="revealBtn"></button>
+      <span class="note" id="qnote"></span>
+    </div>
+  </section>
+
+  <!-- 结束 -->
+  <section class="card hidden" id="end">
+    <div class="done">
+      <h2 id="endH"></h2>
+      <p class="note" id="endP"></p>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+  'use strict';
+  var $ = function(id){ return document.getElementById(id); };
+  var pin = '', hostKey = '', itemCount = 10, perQ = 20;
+  var lastQ = -1, shownState = '', deadline = 0, clockTimer = null, lastSnap = null;
+
+  /* ---------- 三语表 ---------- */
+  var UI = {
+    docTitle:['三日菜篮 · 现场答题（主持端）','三日菜籃 · 現場答題（主持端）','Three-Day Basket · Live Quiz (Host)'],
+    h1:['三日菜篮 · 现场答题','三日菜籃 · 現場答題','Three-Day Basket · Live Quiz'],
+    role:['主持端','主持端','Host'],
+    reset:['重开一局','重開一局','New game'],
+    connecting:['连接中','連線中','Connecting'],
+    stLobby:['等待加入','等待加入','Waiting for players'],
+    stQuestion:['答题中','答題中','Answering'],
+    stReveal:['已公布','已公布','Revealed'],
+    stDone:['已结束','已結束','Finished'],
+    pinLabel:['加入码','加入碼','Game PIN'],
+    start:['开始（共 %n 题）','開始（共 %n 題）','Start (%n questions)'],
+    noteEmpty:['学生用手机打开上面的网址，输入加入码和昵称。','學生用手機打開上面的網址，輸入加入碼和暱稱。','Students open the URL above on a phone and enter the PIN and a nickname.'],
+    noteReady:['已有 %n 人进来，可以开始了。','已有 %n 人進來，可以開始了。','%n joined — ready to start.'],
+    nobody:['还没有人进来。','還沒有人進來。','Nobody has joined yet.'],
+    qno:['第 %a / %b 题','第 %a / %b 題','Question %a / %b'],
+    who:['已答 %a / %b','已答 %a / %b','%a / %b answered'],
+    qnote:['20 秒未答完也会自动公布；没有人答就按 0 算。','20 秒未答完也會自動公布；沒有人答就按 0 算。','It reveals automatically after 20 s; unanswered counts as zero.'],
+    next:['下一题','下一題','Next'],
+    last:['收尾','收尾','Wrap up'],
+    revealNow:['现在公布','現在公布','Reveal now'],
+    correct:['正确答案','正確答案','Correct answer'],
+    mostWrong:['选得最多的那一项','選得最多的那一項','Most-chosen wrong option'],
+    src:['依据','依據','Source'],
+    people:['人','人',''],
+    endH:['这一局结束了','這一局結束了','That is the game'],
+    endP:['题库一共 10 题，每次课抽 5 题；结束后可以点「重开一局」换一套。','題庫一共 10 題，每次課抽 5 題；結束後可以點「重開一局」換一套。','The bank holds 10 questions and each class draws 5. Press New game for another set.'],
+    confirmReset:['清空玩家与进度，重新开这一局？','清空玩家與進度，重新開這一局？','Clear players and progress and restart this room?'],
+    down:['后端没启动','後端沒啟動','Backend not running'],
+    lost:['连接中断，重试中','連線中斷，重試中','Connection lost, retrying'],
+    gA:['配餐','配餐','Meal planning'],
+    gB:['采购','採購','Shopping'],
+    gC:['衣物','衣物','Clothing'],
+    gD:['取舍','取捨','Trade-offs']
+  };
+  var LIDX = 0;
+  function T(v){ return Array.isArray(v) ? (v[LIDX] || v[0]) : (v == null ? '' : v); }
+  function F(v, a, b){
+    return T(v).replace('%a', a == null ? '' : a).replace('%b', b == null ? '' : b)
+              .replace('%n', a == null ? '' : a);
+  }
+
+  function loadLang(){
+    var m = /[?&]lang=([^&]+)/.exec(location.search);
+    if (m){
+      var v = decodeURIComponent(m[1]).toLowerCase();
+      if (v === '0' || v === 'zh' || v === 'zh-hans' || v === 'cn') return 0;
+      if (v === '1' || v === 'tw' || v === 'zh-tw' || v === 'zh-hant') return 1;
+      if (v === '2' || v === 'en') return 2;
+    }
+    try { var s = localStorage.getItem('cailan.live.lang'); if (s !== null && +s >= 0 && +s <= 2) return +s; } catch(e){}
+    return 0;
+  }
+
+  function applyLang(){
+    document.documentElement.lang = ['zh-Hans','zh-Hant','en'][LIDX];
+    document.title = T(UI.docTitle);
+    $('h1').textContent = T(UI.h1);
+    $('roleTag').textContent = T(UI.role);
+    $('resetBtn').textContent = T(UI.reset);
+    $('pinLabel').textContent = T(UI.pinLabel);
+    $('startBtn').textContent = F(UI.start, itemCount);
+    $('endH').textContent = T(UI.endH);
+    $('endP').textContent = T(UI.endP);
+    $('revealBtn').textContent = T(UI.revealNow);
+    $('lang').value = String(LIDX);
+    shownState = ''; // 强制重画
+  }
+
+  function api(path, data){
+    return fetch(path, {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(Object.assign({pin:pin, hostKey:hostKey}, data||{}))
+    }).then(function(r){ return r.json(); });
+  }
+
+  /* ---------- 建房间 / 接回原来的房间 ---------- */
+  function attach(p, k){
+    pin = p; hostKey = k;
+    $('pin').textContent = pin;
+    $('joinUrl').textContent = location.origin + '/play';
+    localStorage.setItem('cailan.lastRoom', JSON.stringify({pin:pin, hostKey:hostKey}));
+    connect();
+  }
+
+  function createRoom(){
+    fetch('/api/room', {method:'POST'}).then(function(r){ return r.json(); }).then(function(d){
+      itemCount = d.total; perQ = d.perQuestionSeconds || 20;
+      applyLang();
+      attach(d.pin, d.hostKey);
+      history.replaceState(null,'','?pin='+d.pin+'&hostKey='+encodeURIComponent(d.hostKey));
+    }).catch(function(){ $('stateTag').textContent = T(UI.down); });
+  }
+
+  (function boot(){
+    var qs = new URLSearchParams(location.search);
+    var cand = null;
+    if(qs.get('pin') && qs.get('hostKey')) cand = {pin:qs.get('pin'), hostKey:qs.get('hostKey')};
+    else {
+      try { cand = JSON.parse(localStorage.getItem('cailan.lastRoom')||'null'); } catch(e){ cand = null; }
+    }
+    if(!cand){ createRoom(); return; }
+    fetch('/api/check?pin='+encodeURIComponent(cand.pin)+'&hostKey='+encodeURIComponent(cand.hostKey))
+      .then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(d){
+        if(d && d.ok){
+          pin = cand.pin; hostKey = cand.hostKey;
+          $('pin').textContent = pin;
+          $('joinUrl').textContent = location.origin + '/play';
+          applyLang();
+          localStorage.setItem('cailan.lastRoom', JSON.stringify({pin:pin, hostKey:hostKey}));
+          history.replaceState(null,'','?pin='+pin+'&hostKey='+encodeURIComponent(hostKey));
+          connect();
+        } else { createRoom(); }
+      })
+      .catch(function(){ createRoom(); });
+  })();
+
+  function connect(){
+    var es = new EventSource('/api/stream?role=host&pin='+encodeURIComponent(pin)+
+      '&hostKey='+encodeURIComponent(hostKey));
+    es.onmessage = function(e){ if(e.data) apply(JSON.parse(e.data)); };
+    es.onerror = function(){ $('stateTag').textContent = T(UI.lost); };
+  }
+
+  /* ---------- 渲染 ---------- */
+  function apply(s){
+    lastSnap = s;
+    $('stateTag').textContent = ({lobby:UI.stLobby, question:UI.stQuestion, reveal:UI.stReveal, done:UI.stDone})[s.state]
+      ? T(({lobby:UI.stLobby, question:UI.stQuestion, reveal:UI.stReveal, done:UI.stDone})[s.state]) : s.state;
+    $('stateTag').classList.toggle('live', s.state === 'question');
+
+    $('lobby').classList.toggle('hidden', s.state !== 'lobby');
+    $('quiz').classList.toggle('hidden', !(s.state === 'question' || s.state === 'reveal'));
+    $('end').classList.toggle('hidden', s.state !== 'done');
+    if(s.state === 'done') return;
+
+    if(s.state === 'lobby'){
+      $('players').innerHTML = (s.players||[]).map(function(p){
+        return '<span class="chip">'+esc(p.name)+'</span>';
+      }).join('') || '<span class="note">'+esc(T(UI.nobody))+'</span>';
+      $('startBtn').disabled = (s.playerCount||0) === 0;
+      $('startBtn').textContent = F(UI.start, itemCount);
+      $('lobbyNote').textContent = (s.playerCount||0) === 0 ? T(UI.noteEmpty) : F(UI.noteReady, s.playerCount);
+      return;
+    }
+
+    // 题目
+    var tag = s.item.g === 'A' ? T(UI.gA) : s.item.g === 'B' ? T(UI.gB) : s.item.g === 'C' ? T(UI.gC) : T(UI.gD);
+    if(lastQ !== s.qIndex || shownState !== s.state){
+      lastQ = s.qIndex; shownState = s.state;
+      $('qno').textContent = F(UI.qno, s.qIndex+1, s.total) + '　·　' + tag;
+      $('qtext').textContent = T(s.item.t);
+      $('opts').innerHTML = s.item.o.map(function(t,i){
+        return '<div class="opt" data-k="'+i+'"><span class="bar"></span><span class="in">'+
+          '<span class="k">'+'ABCD'[i]+'</span><span class="t">'+esc(T(t))+'</span>'+
+          '<span class="n">0</span></span></div>';
+      }).join('');
+      $('why').classList.add('hidden');
+      $('nextBtn').classList.add('hidden');
+      $('revealBtn').classList.remove('hidden');
+    } else if (s.state === 'question' && $('qtext').textContent !== T(s.item.t)) {
+      // 切换语言后重画题面
+      $('qno').textContent = F(UI.qno, s.qIndex+1, s.total) + '　·　' + tag;
+      $('qtext').textContent = T(s.item.t);
+      $('opts').innerHTML = s.item.o.map(function(t,i){
+        return '<div class="opt" data-k="'+i+'"><span class="bar"></span><span class="in">'+
+          '<span class="k">'+'ABCD'[i]+'</span><span class="t">'+esc(T(t))+'</span>'+
+          '<span class="n">0</span></span></div>';
+      }).join('');
+    }
+
+    deadline = s.deadline || 0;
+    if(!clockTimer){ clockTimer = setInterval(tick, 200); tick(); }
+
+    $('who').textContent = F(UI.who, s.answered, s.playerCount);
+    $('qnote').textContent = s.state === 'reveal' ? '' : T(UI.qnote);
+
+    if(s.state === 'reveal'){
+      paintCounts(s);
+      $('revealBtn').classList.add('hidden');
+      $('nextBtn').classList.remove('hidden');
+      $('nextBtn').textContent = s.qIndex >= s.total-1 ? T(UI.last) : T(UI.next);
+      $('why').classList.remove('hidden');
+      var mostWrong = -1, best = -1;
+      (s.counts||[]).forEach(function(c,i){ if(i!==s.correct && c>best){ best=c; mostWrong=i; } });
+      $('why').innerHTML = '<b>'+esc(T(UI.correct))+'：'+'ABCD'[s.correct]+'　'+esc(T(s.item.o[s.correct]))+'</b>'+
+        '<div>'+esc(T(s.item.why))+'</div>'+
+        (mostWrong>=0 && best>0 && s.item.x && T(s.item.x[mostWrong])
+          ? '<div class="x"><b>'+esc(T(UI.mostWrong))+'：'+'ABCD'[mostWrong]+'</b>　'+esc(T(s.item.x[mostWrong]))+'</div>' : '')+
+        (s.item.ref ? '<div class="ref">'+esc(T(UI.src))+' '+esc(Array.isArray(s.item.ref) ? s.item.ref.join(' / ') : s.item.ref)+'</div>' : '');
+    }
+  }
+
+  function paintCounts(s){
+    var total = (s.counts||[0,0,0,0]).reduce(function(a,b){return a+b;},0) || 1;
+    (s.counts||[0,0,0,0]).forEach(function(c,i){
+      var el = $('opts').querySelector('.opt[data-k="'+i+'"]');
+      if(!el) return;
+      el.classList.add('reveal');
+      el.classList.toggle('right', i === s.correct);
+      el.querySelector('.bar').style.width = (c/total*100)+'%';
+      el.querySelector('.n').textContent = c + (LIDX === 2 ? '' : T(UI.people));
+    });
+  }
+
+  function tick(){
+    var el = $('clock');
+    if(!deadline){ el.textContent = '--'; el.classList.remove('warn'); return; }
+    var left = Math.max(0, Math.round((deadline - Date.now())/1000));
+    el.textContent = left + 's';
+    el.classList.toggle('warn', left <= 5);
+  }
+
+  function esc(s){ var d=document.createElement('div'); d.textContent=String(s==null?'':s); return d.innerHTML; }
+
+  /* ---------- 按钮 ---------- */
+  $('startBtn').onclick = function(){ api('/api/start').then(function(d){ if(d.error) alert(d.error); }); };
+  $('revealBtn').onclick = function(){ api('/api/reveal'); };
+  $('nextBtn').onclick = function(){ api('/api/next'); };
+  $('resetBtn').onclick = function(){
+    if(!confirm(T(UI.confirmReset))) return;
+    api('/api/reset');
+  };
+  $('lang').onchange = function(){
+    LIDX = +this.value || 0;
+    try { localStorage.setItem('cailan.live.lang', String(LIDX)); } catch(e){}
+    applyLang();
+    if(lastSnap){ lastQ = -1; shownState = ''; apply(lastSnap); }
+  };
+
+  LIDX = loadLang();
+  applyLang();
+})();
+</script>
+</body>
+</html>

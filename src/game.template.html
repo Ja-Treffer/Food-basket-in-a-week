@@ -1,0 +1,1088 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>一周菜篮 · 情景模拟器</title>
+<style>
+  :root{
+    --bg:#f5f3ed;--paper:#fffefb;--ink:#23211e;--muted:#6d685f;--line:#d9d4c8;
+    --press:#b8503f;--good:#3f7461;--warn:#b1792b;--blue:#3d6480;--soft:#ece8dc;
+    --shadow:0 2px 0 #d5cfc0,0 8px 22px rgba(60,52,38,.08);
+  }
+  *{box-sizing:border-box}
+  [hidden]{display:none !important}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:14px/1.55 system-ui,-apple-system,"Segoe UI","Microsoft YaHei","PingFang SC",sans-serif}
+  button{font:inherit;cursor:pointer}
+  a{color:inherit}
+  #app{max-width:1340px;margin:0 auto;padding:14px 18px 24px;
+       display:grid;grid-template-columns:1fr 258px;gap:14px;align-items:start}
+  header{grid-column:1/-1;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;
+         border-bottom:2px solid var(--ink);padding-bottom:9px}
+  h1{font-size:20px;margin:0;letter-spacing:.05em}
+  .tagline{color:var(--muted);font-size:12.5px}
+  .spacer{flex:1}
+  .mini{background:transparent;border:1px solid var(--line);color:var(--muted);padding:4px 10px;
+        border-radius:3px;font-size:12px;text-decoration:none;display:inline-block}
+  .mini:hover{border-color:var(--ink);color:var(--ink)}
+  .seed{color:var(--muted);font-size:11.5px;font-variant-numeric:tabular-nums}
+  .clock{font:600 12.5px/1 system-ui,sans-serif;font-variant-numeric:tabular-nums;
+    border:1px solid var(--line);border-radius:999px;padding:5px 11px;color:var(--muted);
+    background:var(--paper);letter-spacing:.04em;white-space:nowrap;transition:color .2s,border-color .2s}
+  .clock.warn{color:var(--press);border-color:var(--press);background:#fdf1ef}
+  .clock.over{color:#fff;background:var(--press);border-color:var(--press)}
+  .clock[hidden]{display:none}
+  #left{min-width:0;display:grid;gap:12px}
+  #right{position:sticky;top:14px;display:grid;gap:12px}
+  .pane{background:var(--paper);border:1px solid var(--line);border-radius:5px;padding:12px 14px;box-shadow:var(--shadow)}
+  .pane h2{font-size:11.5px;letter-spacing:.14em;color:var(--muted);margin:0 0 9px;font-weight:700}
+
+  /* ---- 右上状态栏 ---- */
+  #status{background:var(--paper);border:1px solid var(--ink);border-radius:5px;padding:11px 13px;box-shadow:var(--shadow)}
+  #status .st{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px}
+  #status .st b{font-size:13px}
+  #status .daytag{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+  #status .sub{font-size:10.5px;color:var(--muted);margin-bottom:9px;line-height:1.5}
+  .srow{display:flex;align-items:center;gap:7px;margin-bottom:7px;position:relative}
+  .srow .nm{font-size:11px;width:66px;flex:none;color:#413d36}
+  .srow .track{flex:1;height:8px;background:var(--soft);border-radius:4px;overflow:hidden;border:1px solid #e0dbcd}
+  .srow .fill{height:100%;border-radius:4px;transition:width .5s ease,background .5s ease}
+  .srow .vl{font-size:13px;font-weight:700;width:24px;text-align:right;font-variant-numeric:tabular-nums}
+  .srow .delta{position:absolute;right:-1px;top:-15px;font-size:11px;font-weight:700;
+               background:var(--ink);color:#fff;padding:1px 5px;border-radius:3px;opacity:0;
+               transition:opacity .3s,top .3s;white-space:nowrap}
+  .srow .delta.show{opacity:1;top:-19px}
+  .srow .delta.good{background:var(--good)}.srow .delta.bad{background:var(--press)}
+  #status .foot{border-top:1px dotted var(--line);padding-top:8px;margin-top:4px;font-size:10.5px;color:var(--muted);line-height:1.6}
+
+  /* ---- 场景与小人 ---- */
+  #scene{width:100%;height:174px;display:block;border:1px solid var(--line);border-radius:4px;background:#f0eee5}
+  .place{cursor:pointer}
+  .place rect{transition:fill .2s,stroke .2s}
+  .place:hover rect{fill:#e6e0cd}
+  .place.on rect{stroke:var(--ink);stroke-width:2;fill:#e6e0cd}
+  .place text{font-size:11px;fill:#4a463f;pointer-events:none}
+  #avatar{transition:transform .55s cubic-bezier(.4,1.5,.5,1)}
+  .scenehint{font-size:11px;color:var(--muted);margin-top:7px;line-height:1.6}
+
+  /* ---- TODO / 任务 ---- */
+  .todo{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);border-radius:4px;
+        padding:10px 12px;margin-bottom:8px;background:#fbf9f3;text-align:left;width:100%;color:var(--ink)}
+  .todo:hover{border-color:var(--ink)}
+  .todo.done{opacity:.55;background:#f2f0e8}
+  .todo .box{width:16px;height:16px;border:1.5px solid var(--muted);border-radius:3px;flex:none;margin-top:2px}
+  .todo.done .box{background:var(--ink);border-color:var(--ink)}
+  .todo .tt{font-size:13.5px;font-weight:700;margin-bottom:2px}
+  .todo .npc{font-size:11px;color:var(--blue);font-weight:600}
+  .todo .desc{font-size:12px;color:#4a463f;line-height:1.6}
+  .todo .placeTag{font-size:10.5px;color:var(--muted);margin-left:6px}
+  #taskHead{border-left:3px solid var(--blue);padding-left:11px;margin-bottom:12px}
+  #taskHead .theme{font-size:16px;font-weight:700;line-height:1.4}
+  #taskHead .npcLine{font-size:12px;color:var(--blue);margin-top:3px}
+  #taskHead .say{font-size:13px;color:#413d36;margin-top:6px;line-height:1.7}
+  .stepnav{font-size:11px;color:var(--muted);letter-spacing:.1em;margin-bottom:7px}
+  .qtext{font-size:15px;font-weight:700;margin-bottom:10px}
+  .opts{display:grid;gap:7px}
+  .opt{display:flex;gap:10px;align-items:flex-start;text-align:left;width:100%;
+       border:1px solid var(--line);background:#fbf9f3;border-radius:4px;padding:10px 12px;color:var(--ink)}
+  .opt:hover{border-color:var(--ink);background:#f5f1e5}
+  .opt .bullet{width:19px;height:19px;border:1.5px solid var(--muted);border-radius:50%;flex:none;
+               font-size:11px;line-height:17px;text-align:center;color:var(--muted)}
+  .opt .ot{font-size:13px;line-height:1.6}
+  .opt.diy{border-style:dashed;color:var(--blue)}
+  .opt .hint{font-size:11px;color:var(--muted);display:block;margin-top:2px}
+  #diyBox{margin-top:9px;border:1px dashed var(--blue);border-radius:4px;padding:9px 11px;background:#f7fafb}
+  #diyBox input{width:100%;border:1px solid var(--line);background:#fff;padding:5px 7px;border-radius:3px;font:inherit;font-size:12px}
+  #diyBox .row{display:flex;gap:6px;margin-top:6px}
+  .chosen{font-size:11.5px;color:var(--muted);margin-top:9px;border-top:1px dotted var(--line);padding-top:7px;line-height:1.75}
+  .chosen b{color:var(--ink)}
+  .btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:11px;align-items:center}
+  .primary{background:var(--ink);color:#fff;border:1px solid var(--ink);padding:7px 13px;border-radius:3px;font-weight:600;font-size:12.5px}
+  .primary:hover{background:#3d3933}
+  button:disabled{opacity:.4;cursor:not-allowed}
+  #log{height:96px;overflow-y:auto;font-size:11.5px;line-height:1.75}
+  #log .le{padding:1px 0;border-bottom:1px dotted #ebe6d9}
+  #log .d{color:var(--muted);margin-right:6px;font-variant-numeric:tabular-nums}
+
+  /* ---- 覆盖层 / 结算 ---- */
+  .overlay{position:fixed;inset:0;background:rgba(35,33,30,.58);z-index:30;display:flex;
+    align-items:flex-start;justify-content:center;padding:24px 14px;overflow-y:auto}
+  .sheet{background:var(--paper);border:1px solid var(--ink);border-radius:6px;max-width:840px;width:100%;
+    padding:22px 26px 26px;box-shadow:0 18px 50px rgba(0,0,0,.24)}
+  .sheet h2{margin:0 0 3px;font-size:21px}
+  .sheet .sub{color:var(--muted);font-size:12px;margin-bottom:14px}
+  .sheet h3{font-size:11.5px;letter-spacing:.1em;color:var(--muted);margin:16px 0 7px}
+  .settleTask{border:1px solid var(--line);border-radius:4px;padding:11px 13px;margin-bottom:9px;background:#fbf9f3}
+  .settleTask .h{font-size:13.5px;font-weight:700;margin-bottom:5px}
+  .settleTask .npc{font-size:11px;color:var(--blue);font-weight:400;margin-left:6px}
+  .settleLine{font-size:12px;line-height:1.75;padding:3px 0;border-bottom:1px dotted #e8e3d5}
+  .settleLine:last-child{border:0}
+  .settleLine .pick{font-weight:600}
+  .settleLine .num{font-variant-numeric:tabular-nums;font-weight:700;margin-left:5px}
+  .settleLine .why{color:var(--muted);font-size:11.5px;display:block;margin-top:1px}
+  .settleLine .why code{background:var(--soft);padding:0 4px;border-radius:2px}
+  .g{color:var(--good)}.b{color:var(--press)}
+  .extra{background:#fbf4e9;border:1px solid #e8d9bd;border-radius:4px;padding:9px 12px;font-size:12px;line-height:1.8;margin-top:10px}
+  .totals{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}
+  .tot{border:1px solid var(--line);border-radius:4px;padding:8px;text-align:center;background:#fbf9f3}
+  .tot.p{border-top:3px solid #3f7461}.tot.s{border-top:3px solid #3d6480}.tot.c{border-top:3px solid #c58a3a}.tot.m{border-top:3px solid #8a5f3c}
+  .tot.p .v.ok{color:#3f7461}.tot.s .v.ok{color:#3d6480}.tot.c .v.ok{color:#a9761f}.tot.m .v.ok{color:#8a5f3c}
+  .tot .v.no{color:var(--press)}.tot .v.z{color:var(--muted)}
+  .tot .v.ax-p{color:#3f7461}.tot .v.ax-s{color:#3d6480}.tot .v.ax-c{color:#a9761f}.tot .v.ax-m{color:#8a5f3c}
+  .tot .n{font-size:11px;color:var(--muted)}.tot .v{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
+  .refs{display:inline-flex;gap:4px;margin-left:2px;vertical-align:baseline}
+  .refbtn{font:inherit;font-size:10.5px;letter-spacing:.04em;padding:0 5px;border:1px solid var(--line);
+    border-radius:3px;background:#fff;color:var(--blue);cursor:pointer;line-height:1.5}
+  .refbtn:hover{border-color:var(--blue);background:#eef4f8}
+  .refcard{position:fixed;inset:0;z-index:60;background:rgba(20,20,18,.45);display:flex;align-items:center;justify-content:center;padding:20px}
+  .refcard[hidden]{display:none}
+  .rc-box{background:var(--paper);border:1px solid var(--line);border-radius:8px;max-width:640px;width:100%;
+    max-height:78vh;overflow:auto;padding:16px 18px;box-shadow:0 10px 34px rgba(0,0,0,.22)}
+  .rc-head{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .rc-head b{font-size:15px;letter-spacing:.05em}
+  .rc-head .rc-tag{font-size:11px;color:var(--muted)}
+  .rc-head button{margin-left:auto;font:inherit;font-size:12px;padding:3px 10px;border:1px solid var(--line);
+    border-radius:4px;background:#fff;cursor:pointer}
+  .rc-body{font-size:13px;line-height:1.85;white-space:pre-wrap}
+  .rc-note{margin-top:10px;font-size:11px;color:var(--muted)}
+  .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+  table{width:100%;border-collapse:collapse;font-size:11.5px;font-variant-numeric:tabular-nums}
+  th,td{border-bottom:1px solid var(--line);padding:5px 6px;text-align:left;vertical-align:top}
+  th{color:var(--muted);font-weight:600;background:#faf7ef}
+  .stepbar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:6px 0 10px}
+  #daySummary{background:#fbf9f3;border:1px dashed var(--line);border-radius:4px;padding:9px 11px;font-size:12.5px;line-height:1.7;margin-bottom:9px}
+  .unrec{background:#fbf4e9;border:1px solid #e8d9bd;border-radius:4px;padding:10px 13px;font-size:12px;line-height:1.85}
+  .kv{display:grid;grid-template-columns:110px 1fr;gap:4px 10px;font-size:12px;margin:9px 0}
+  .kv .k{color:var(--muted)}
+  @media(max-width:1000px){#app{grid-template-columns:1fr}#right{position:static;grid-row:1}
+    #status{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.srow{margin:0}}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1>一周菜篮 · 情景模拟器</h1>
+    <span class="tagline">NPC 派任务 → 连续选择 → 结算日结账</span>
+    <span class="spacer"></span>
+    <span class="clock" id="clock">准备中</span>
+    <a class="mini" href="review.html">轻考核</a>
+    <span class="seed" id="seedLabel"></span>
+    <button class="mini" id="rulesBtn">规则与依据</button>
+    <button class="mini" id="restart">重开</button>
+  </header>
+
+  <div id="left">
+    <div class="pane">
+      <h2>今日场景 · 点击地点，小人会走过去</h2>
+      <svg id="scene" viewBox="0 0 460 174" role="img" aria-label="场景：家中厨房、街市、家政室、布料店">
+        <rect x="0" y="0" width="460" height="174" fill="#f0eee5"/>
+        <rect x="0" y="132" width="460" height="42" fill="#e3ddca"/>
+        <line x1="0" y1="132" x2="460" y2="132" stroke="#c9c1ab" stroke-width="1.5"/>
+        <g class="place" data-place="home"><rect x="18" y="56" width="88" height="60" rx="4" fill="#eae5d6" stroke="#c9c1ab"/>
+          <rect x="28" y="66" width="24" height="20" fill="#d5cdb6"/><rect x="60" y="78" width="34" height="26" fill="#cfc4a8"/>
+          <text x="62" y="128" text-anchor="middle">家中厨房</text></g>
+        <g class="place" data-place="market"><rect x="126" y="56" width="88" height="60" rx="4" fill="#eae5d6" stroke="#c9c1ab"/>
+          <path d="M132 62 h76 l-8 12 h-60 z" fill="#c3b997"/><circle cx="146" cy="96" r="7" fill="#b9c7a3"/>
+          <circle cx="166" cy="96" r="7" fill="#d3b08c"/><circle cx="186" cy="96" r="7" fill="#b9c7a3"/>
+          <text x="170" y="128" text-anchor="middle">街市</text></g>
+        <g class="place" data-place="lab"><rect x="234" y="56" width="88" height="60" rx="4" fill="#eae5d6" stroke="#c9c1ab"/>
+          <rect x="244" y="82" width="68" height="8" fill="#cfc4a8"/><rect x="250" y="66" width="12" height="16" fill="#c2cbd0"/>
+          <rect x="268" y="66" width="12" height="16" fill="#c2cbd0"/><rect x="286" y="66" width="12" height="16" fill="#c2cbd0"/>
+          <text x="278" y="128" text-anchor="middle">家政室</text></g>
+        <g class="place" data-place="fabric"><rect x="342" y="56" width="100" height="60" rx="4" fill="#eae5d6" stroke="#c9c1ab"/>
+          <rect x="352" y="64" width="16" height="44" fill="#c8b9a8"/><rect x="372" y="64" width="16" height="44" fill="#aebdb4"/>
+          <rect x="392" y="64" width="16" height="44" fill="#c9b6b6"/><rect x="412" y="64" width="16" height="44" fill="#b9bac9"/>
+          <text x="392" y="128" text-anchor="middle">布料店</text></g>
+        <g id="avatar" transform="translate(58,0)">
+          <circle cx="0" cy="82" r="10" fill="#3d3933"/>
+          <rect x="-9" y="93" width="18" height="26" rx="5" fill="#3d6480"/>
+          <rect x="-8" y="119" width="6" height="13" rx="2" fill="#3d3933"/>
+          <rect x="2" y="119" width="6" height="13" rx="2" fill="#3d3933"/>
+          <rect x="-13" y="96" width="5" height="17" rx="2" fill="#3d6480"/>
+          <rect x="8" y="96" width="5" height="17" rx="2" fill="#3d6480"/>
+        </g>
+      </svg>
+      <div class="scenehint" id="sceneHint">点击上方任何一个地点，小人会走过去；该地点若有未完成的任务，会自动接住。</div>
+    </div>
+
+    <div class="pane" id="mainPane"></div>
+
+    <div class="pane">
+      <h2>事件记录</h2>
+      <div id="log"></div>
+    </div>
+  </div>
+
+  <div id="right">
+    <div id="status"></div>
+    <div class="pane">
+      <h2>玩法说明</h2>
+      <div style="font-size:11.5px;line-height:1.85;color:#4a463f">
+        1. 每日两项 NPC 任务，各有主题。<br>
+        2. 每项任务连续几步选择，<b>选项不显示任何数值</b>，没有推荐、没有禁用、没有对错。<br>
+        3. 全部做完（或不想做）之后才按「结算日」。<br>
+        4. 右上角四条读数<b>结算后才变动</b>，并逐条解释原因。<br>
+        5. 第七日之后查看总结算与逐日账本。<br>
+        6. <b>课堂模式整局 5 分钟</b>：顶部时钟走完会就地结账，没走完的日子按已走过的算。<br>
+        <span style="color:var(--muted)">「自己写一个做法」不计入读数——未经校核的数值不由系统代填，留待轻考核自行举证。</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="overlay" class="overlay" hidden><div class="sheet" id="sheet"></div></div>
+
+<script>
+(function(){
+  'use strict';
+
+  /* =========================================================
+     §0 参数集中区。p 环境负荷(低好) s 营养 c 口味/接受度 m 可用钱
+     ========================================================= */
+  var CFG={days:7,tasksPerDay:2,start:{p:68,c:62,m:55,s:58},
+    burnBelow:25,burnMax:2,burnRecover:32,burnGiveback:0.55,
+    rebound:{rate:0.80,saleBonus:0.20,cap:16,saveShare:0.60},
+    advocacy:{base:0.35,high:0.15,low:-0.15,policy:0.20,win:[8,14],highAt:60,lowAt:25},
+    demoInterval:420,timeBudget:300};
+
+  function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);
+    t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+  var qs=new URLSearchParams(location.search);
+  var seed=parseInt(qs.get('seed'),10);
+  if(!Number.isFinite(seed))seed=(Date.now()^Math.floor(Math.random()*1e9))>>>0;
+  var autoDemo=qs.get('demo')==='1',rng=mulberry32(seed);
+
+  /* ---- 课堂时钟：整局硬上限，到点就地收束 ---- */
+  var budget=(function(){
+    if(qs.get('timer')==='0')return 0;
+    var m=parseInt(qs.get('minutes'),10);
+    return (Number.isFinite(m)&&m>0?m:CFG.timeBudget/60)*60;
+  })();
+  var t0=Date.now(), timedOut=false, clockTimer=null;
+  function elapsed(){return (Date.now()-t0)/1000;}
+  function remaining(){return budget?Math.max(0,budget-elapsed()):Infinity;}
+  function mmss(s){s=Math.max(0,Math.round(s));return Math.floor(s/60)+':'+('0'+(s%60)).slice(-2);}
+  function tickClock(){
+    var el=$('clock'); if(!el)return;
+    if(!budget){el.hidden=true;return;}
+    var r=remaining();
+    el.hidden=false;
+    if(timedOut){el.className='clock over';el.textContent='时间到 '+mmss(elapsed()-budget);return;}
+    el.className='clock'+(r<=60?' warn':'');
+    el.textContent='⏱ '+mmss(r);
+    if(r<=0){timedOut=true;timeUp();}
+  }
+  function stopClock(){if(clockTimer){clearInterval(clockTimer);clockTimer=null;}}
+  function timeUp(){
+    if(g.over)return;
+    if(g.phase==='task'){g.phase='todo';g.cur=null;g.step=0;}
+    if(g.phase!=='settle'){settleDay();return;}
+    markTimeUp();
+  }
+  function markTimeUp(){
+    var b=$('nextBtn');
+    if(!b)return;
+    b.textContent='时间到 · 直接看总结算';
+    b.classList.add('primary');
+    var s=$('sheet').querySelector('.sub');
+    if(s&&s.textContent.indexOf('时间到')<0)s.insertAdjacentHTML('afterend',
+      '<div class="extra" style="margin:0 0 12px;border-color:#e2b9b2;background:#fdf1ef">'+
+      '<b>课堂时间到。</b>这一日的账已经结完，可以直接跳到总结算；也可以继续往下讲，但课堂节奏已经超了。</div>');
+  }
+  function ri(a,b){return a+Math.floor(rng()*(b-a+1));}
+  function pick(a){return a[Math.floor(rng()*a.length)];}
+  function clamp(v){return Math.max(0,Math.min(100,v));}
+  function sgn(n){return n>0?'+'+n:(n<0?''+n:'0');}
+  function rngTxt(a,b){return (a>=0?'+':'')+a+'~'+(b>=0?'+':'')+b;}
+  function esc(s){var d=document.createElement('div');d.textContent=String(s);return d.innerHTML;}
+  function $(id){return document.getElementById(id);}
+  var KEYS=[['p','环境负荷'],['s','营养均衡'],['c','口味 / 接受度'],['m','可用钱']];
+  var META={p:'环境负荷',s:'营养均衡',c:'口味 / 接受度',m:'可用钱'};
+  var PLACE={home:'家中厨房',market:'街市',lab:'家政室',fabric:'布料店'};
+  var PLACEX={home:58,market:170,lab:278,fabric:392};
+
+  /* =========================================================
+     §1 依据编号。H 中国香港官方/一手；R IPCC/文献；F 布料；D 设计参数
+     ========================================================= */
+  var REF={
+    H1:'衞生防護中心《均衡素食的要點》原文：「素食並非必然健康」；「植物雖提供蛋白質，但其質素並未及肉類和奶類」；「現時未有植物性食物獲證實能為人體安全和有效提供維生素B12……全素食者應進食添加了維生素B12的產品」；「素食者特別容易缺乏鐵質……並進食含豐富維生素C的食物……以助身體吸收鐵質」；钙的來源包括「硬豆腐、加鈣豆漿和深綠色蔬菜」。【原文已核】',
+    H2:'同页：「採用蒸、炆、燉、焯等低脂烹調方法代替煎和炸」；「大豆製品（如豆腐、腐竹、豆乾）……以提升餸菜的鮮味和口感」。【原文已核】',
+    H3:'漁護署《關於漁業》：「政府的漁業政策旨在保育本地的漁業資源及促進漁業可持續發展運用，使本地消費者不斷有穩定的鮮魚供應」；另有「優質養魚場計劃」表述。【搜索结果原文片段已核】',
+    H4:'Poore & Nemecek (2018) 经 Our World in Data 处理：单位 kgCO₂eq/kg、数据年份 2010，支持「白肉/豆类低于反刍红肉」这一方向。TODO(需核验)：未读到各品项具体数值，故不写 kg 数。',
+    E1:'教育局课程文件页列有「科技與生活 (中四至中六)」及「健康管理與社會關懷」课程及评估指引。TODO(需核验)：范畴名称待查 PDF。',
+    R1:'IPCC AR6 WGIII Ch5：需求侧策略到 2050 年可减少 40–70% 排放（high confidence）。【原文已核】',
+    R2:'同章：最大 Avoid 来自减少长途航空，最大 Shift 来自植物性饮食，最大 Improve 来自建筑能效。【原文已核】',
+    R3:'同章：优先无车出行与电动化约 2 tCO2eq/人/年量级。【原文已核；已折算为相对刻度】',
+    R4:'同章：体面生活标准（DLS）与福祉可在低需求路径下实现。【原文已核】',
+    R5:'同章：共享/循环经济贡献有限，收益主张「limited evidence」。【原文已核】',
+    R6:'同章列举的高潜行动含空调设定温度调整、转公共交通、减少电器使用。【原文已核】',
+    R7:'回弹效应：省下的钱转投其他消费会抵消部分减排。TODO(需核验)：未取到原文与百分比。',
+    R8:'Wynes & Nicholas 2017：教材偏爱的低影响行动与真正高影响行动存在错配。TODO(需核验)。',
+    R9:'个人碳足迹框架的批评及反驳。TODO(需核验)：双方原文未核，倡导因此只给概率。',
+    F1:'布料生命周期（原料、洗涤温度、耐用次数、微纤维）。TODO(需核验)：未取到一手数据，布料相关一律给方向并标 C。',
+    D1:'设计参数：0–100 相对刻度；方向取自来源，数值是教学映射，不是排放因子、营养素含量或港币。',
+    D2:'设计参数：模糊区间宽度表示条件依赖程度（产地、运输、认证、家庭习惯）。',
+    D3:'设计参数：口味/接受度跌破阈值触发「出去补一顿」，对应「家人不长期接受 ⇒ 方案不持久」。',
+    D4:'设计参数：回弹系数。',
+    D5:'设计参数：倡导给概率而非确定点数。',
+    D6:'设计参数：延迟结算，用来呈现当时看不见的代价。',
+    D7:'设计参数：所有数值后置——选择阶段不显示任何读数提示，结算日才逐条解释。'
+  };
+
+  /* =========================================================
+     §2 任务库。选项数据含 fx / why / ref，但渲染时只输出 text。
+        每个 step 会自动追加一个「自己写一个做法」选项。
+     ========================================================= */
+  function o(text,fx,ref,why,extra){var x={text:text,fx:fx,ref:ref,why:why};
+    if(extra)for(var k in extra)x[k]=extra[k];return x;}
+  var TASKS=[
+    {id:'t1',place:'home',npc:'母亲',theme:'今晚父亲回家吃饭，要有一道带肉的菜和一锅汤',
+     say:'「不要又是只有一碟青菜，加些肉，再有一碗汤，才像家里的一顿饭。」',
+     steps:[
+       {q:'主料怎么选？',opts:[
+         o('买两只广东来的冰鲜白羽鸡腿，分两日食用',{p:[-9,-6],s:[1,3],c:[2,4],m:[3,6]},['H4','H1','R2'],'白肉提供完整蛋白与铁，家人接受度较高；相对反刍红肉，方向性排放较低（H4 只核到数据源，未核具体数值）。'),
+         o('买一块硬豆腐加两件豆干',{p:[-10,-7],s:[-2,1],c:[-6,-3],m:[5,9]},['H1','H4'],'价格低、环境负荷低、含钙；但植物蛋白质质量不及肉类，单靠豆腐需要懂得搭配（H1 原文）。'),
+         o('在超市买一盒进口冷冻牛排',{p:[3,6],s:[3,5],c:[5,8],m:[-9,-5]},['H4','R2','D2'],'反刍红肉的方向性排放最高，进口与冷冻链再加一段；营养和口味两行确实不差，所以四本账会互相拉扯。')]},
+       {q:'怎么做？',opts:[
+         o('蒸、焖，少油少酱',{p:[-4,-2],s:[2,4],c:[-1,2],m:[1,3]},['H2'],'官方原文是「採用蒸、炆、燉、焯等低脂烹調方法代替煎和炸」——同一道菜，换一种烹调法，营养与用油同时改变。'),
+         o('重酱煎炸，香气足',{p:[1,3],s:[-3,-1],c:[4,7],m:[-2,0]},['H2'],'口味这一行赢，营养输；素菜常见的「为了好吃而加入大量油和调味料」，也是同一页点名的问题。'),
+         o('一锅连汤做好，少洗几只碗',{p:[-3,-1],s:[0,1],c:[-1,1],m:[2,4]},['D6','R6'],'省水省时间，代价是菜式单调。')]},
+       {q:'配菜与剩食怎么处理？',opts:[
+         o('买邻近产区当季菜，加番茄／西兰花',{p:[-5,-3],s:[2,4],c:[1,3],m:[1,4]},['H1','R2'],'维生素 C 有助植物性铁吸收；当季、少包装、步行可达。'),
+         o('买一盒进口预先包装沙拉',{p:[1,3],s:[1,2],c:[0,2],m:[-5,-3]},['D2'],'方便是事实，包装与长途运输也是事实。'),
+         o('多煮一些，留作明日带饭',{p:[-6,-3],s:[-1,1],c:[-2,1],m:[4,7]},['R5','D6'],'被倒掉的那一份才是整条链条里最贵的一份；留下就同时省了明日一顿。')]}]},
+
+    {id:'t2',place:'home',npc:'妹妹',theme:'她看完一段影片，想全家试一周全素',
+     say:'「影片里说吃素就能救地球，我们试一周好不好？」',
+     steps:[
+       {q:'这一周怎么安排？',opts:[
+         o('好，明日起全家全素，其余照旧',{p:[-16,-12],s:[-12,-8],c:[-16,-11],m:[1,5]},['H1','D3'],'环境这一行最好看，但 H1 列出的 B12、铁、钙、蛋白质质量全都没有人负责；家人未必肯长期吃，后面设有回吐机制。',
+           {delay:{day:2,label:'第二日：家人另外出去吃了一顿牛排',fx:{p:[3,6],c:[2,5],s:[1,3],m:[-4,-2]},ref:['D3'],why:'接受度撑不住，先前压下的环境负荷自行回吐。'}}),
+         o('可以，但要加 B12 豆奶、硬豆腐，菜要配维生素 C',{p:[-14,-10],s:[-2,1],c:[-11,-7],m:[-6,-3]},['H1','D1'],'同样是吃素，补齐 B12、钙与铁吸收之后，营养这一行几乎不下降。问题从来不是「吃不吃素」，而是「会不会配」。'),
+         o('不全素：两日白肉、两日豆腐，其余照旧',{p:[-9,-6],s:[2,4],c:[2,5],m:[2,5]},['H4','H1','R2'],'白肉顶住蛋白质与铁，豆腐顶住成本与排放，家人接受度保得住——四本账通常最稳的一条路。')]},
+       {q:'蛋白质和铁从哪里来？',opts:[
+         o('豆腐、豆干、坚果轮换，加番茄西兰花',{p:[-4,-2],s:[3,5],c:[-1,2],m:[-1,2]},['H1'],'H1 原文：素食者要「足夠和不同種類的堅果、種籽、豆類和大豆製品」，再配维生素 C 帮助铁吸收。'),
+         o('只吃青菜和白饭就够',{p:[-3,-1],s:[-7,-4],c:[-4,-2],m:[4,7]},['H1'],'蛋白质质量与 B12 两行直接空了。这不是道德问题，是配餐问题。'),
+         o('买现成素肉制品，方便',{p:[-2,0],s:[0,2],c:[2,4],m:[-7,-4]},['D2','H1'],'高度加工、包装、价格，三项都要计入；营养强化取决于品牌，所以区间放宽。')]},
+       {q:'怎么跟家人说？',opts:[
+         o('一起坐下来写一张一周菜单',{p:[-1,0],s:[1,3],c:[4,7],m:[0,2]},['H1','R4','D3'],'不改变环境读数，但把快撑不住的那一行拉回来。小童、青少年、孕妇、长者茹素前应先咨询医生和营养师，也是 H1 原文。'),
+         o('在群组转发那段影片，当作已经说过',{p:[0,0],s:[0,0],c:[2,4],m:[0,0]},['R8','R9','D7'],'全场最不客气的一个选项：改变的是感受，不是冰箱里任何一样东西。'),
+         o('不说明，煮出来再说',{p:[-6,-3],s:[-2,1],c:[-9,-5],m:[0,2]},['D3'],'读数照样变动，但接受度那一行要自己承担。')]}]},
+
+    {id:'t3',place:'lab',npc:'家政科教师',theme:'交一份午餐饭盒，主题「一荤一素一主食」',
+     say:'「不许买现成的，自己选料自己做，明日交。」',
+     steps:[
+       {q:'「荤」用什么？',opts:[
+         o('冰鲜鸡丝，家中冰箱有',{p:[-6,-4],s:[2,4],c:[1,3],m:[2,4]},['H4','H1'],'白肉保留优质蛋白，方向性排放低于红肉。'),
+         o('向档主买今早到港的近海鱼，略贵',{p:[-6,-3],s:[3,6],c:[2,5],m:[-5,-2]},['H3','D2'],'渔护署讲的是「保育本地漁業資源及促進漁業可持續發展運用」，即有限、看来源，不是无脑戒鱼。'),
+         o('开一罐午餐肉，最省事',{p:[-1,1],s:[-2,0],c:[2,4],m:[2,4]},['D2'],'加工、包装、钠，三项都不在四本账里，但口味与时间赢。')]},
+       {q:'素菜与主食怎么配？',opts:[
+         o('当季菜＋糙米，前一晚煮好',{p:[-4,-2],s:[2,4],c:[0,2],m:[1,3]},['H1','R2'],'H1 建议素食者尽量选未经精制的谷物类；当季菜少包装。'),
+         o('进口沙拉＋白面包',{p:[1,2],s:[0,1],c:[1,3],m:[-5,-3]},['H1','D2'],'精制谷物在加工过程流失大量膳食纤维与矿物质（H1 原文）。'),
+         o('昨晚剩菜翻煮＋白饭',{p:[-5,-3],s:[-1,1],c:[-2,1],m:[3,6]},['R5','D6'],'最省，代价是卖相。')]},
+       {q:'交完饭盒之后呢？',opts:[
+         o('饭盒洗净重用，下餐继续带',{p:[-4,-2],s:[0,0],c:[-1,1],m:[2,4]},['R5','D6'],'重复使用才摊得薄；单次收益本来就小。'),
+         o('即弃盒＋保鲜膜，不用洗',{p:[2,4],s:[0,0],c:[2,3],m:[-2,-1]},['R5'],'方便换来一次性物料；循环经济的收益主张，IPCC 写的是 limited evidence。'),
+         o('顺便向教师提出：饭堂加一个白肉／豆腐餐',{p:[0,0],s:[0,0],c:[-1,0],m:[0,0]},['R9','D5'],'可能推动整个饭堂，也可能停在会议记录。约 35% 会在总结算时发生。',{adv:true})]}]},
+
+    {id:'t4',place:'fabric',npc:'母亲（拿着一条脱线的校服）',theme:'裤脚脱线，明日要穿；或者干脆做一条新围裙',
+     say:'「你在家政科学过车缝，自己看着办。」',
+     steps:[
+       {q:'用什么布料？',opts:[
+         o('剪旧校服／旧布改造',{p:[-6,-3],s:[0,0],c:[-1,2],m:[5,9]},['F1','R5','D2'],'省得最实在，但合身与观感要自己承担；IPCC 对循环经济收益主张写的是 limited evidence，所以不给大数值。',
+           {delay:{after:2,label:'旧布车缝处脱开，需要再补一次',fx:{p:[1,2],c:[-2,0],m:[-1,0]},ref:['D6'],why:'耐用度是布料生命周期的一部分，当日看不到。'}}),
+         o('买平价聚酯快时尚布',{p:[-5,-3],s:[0,0],c:[3,5],m:[4,7]},['F1','D2'],'当刻最划算也最顺手；纤维来源与耐穿次数不写在价牌上。',
+           {delay:{after:2,label:'洗两次起毛球，需要再买一件',fx:{p:[2,4],c:[-2,0],m:[-5,-3]},ref:['D6','F1'],why:'快时尚的代价通常迟两日才到。'}}),
+         o('买全新棉布，按纸样裁',{p:[-3,-1],s:[0,0],c:[2,4],m:[-6,-3]},['F1','D2'],'棉的原料端不轻，但胜在好车、好洗、耐穿；具体生命周期数值本轮未核，所以标 C。')]},
+       {q:'怎么剪裁？',opts:[
+         o('照纸样量清楚，一次裁准',{p:[-4,-2],s:[0,0],c:[1,3],m:[1,3]},['F1','D6'],'裁准 = 边角料少 = 浪费少，成品也耐穿。'),
+         o('就着布随手剪，快',{p:[1,3],s:[0,0],c:[-2,0],m:[-2,0]},['F1','D6'],'剪坏要再补布，这一笔当日看不到。'),
+         o('放大两寸，预留可改的余量',{p:[-2,-1],s:[0,0],c:[0,2],m:[-2,0]},['F1','D2'],'多用一些布，换来可以改两次。')]},
+       {q:'边角料怎么处理？',opts:[
+         o('收起做抹布，或拼成一个口袋',{p:[-4,-2],s:[0,0],c:[0,2],m:[2,4]},['R5','F1'],'最细碎的布头，通常正是最容易被丢掉的部分。'),
+         o('当场丢弃，桌面干净',{p:[2,3],s:[0,0],c:[2,3],m:[0,0]},['R5'],'省时间，物料直接进垃圾桶。'),
+         o('退回店里／放到旧物交换处',{p:[-3,-1],s:[0,0],c:[-2,0],m:[0,2]},['R5','D2'],'要有店家肯收、有人肯拿，才成立，所以收益小。')]}]},
+
+    {id:'t5',place:'market',npc:'同学',theme:'生日聚餐，去哪里、怎么去、吃什么由你决定',
+     say:'「不要又迟到，我已经订好位了。」',
+     steps:[
+       {q:'怎么去？',opts:[
+         o('港铁转一段巴士',{p:[-7,-4],s:[0,0],c:[-5,-2],m:[5,9]},['R3','R6'],'最实用的一张：同时节省开支；代价是挤、慢、转车，还有延误。'),
+         o('出租车直达门口',{p:[3,6],s:[0,0],c:[5,8],m:[-8,-5]},['R3'],'舒适与准时的价格，写在环境和可用钱两行。'),
+         o('步行前往，当作散步',{p:[-5,-3],s:[1,2],c:[-4,-1],m:[6,9]},['R3','R4'],'零成本、零排放，但要近、要天气好、要有时间。')]},
+       {q:'怎么点菜？',opts:[
+         o('少点一些，吃不完打包',{p:[-5,-3],s:[0,1],c:[-1,2],m:[3,6]},['R5','D6'],'厨余是食物链条里最不划算的一段。'),
+         o('每人一份套餐，省得想',{p:[-1,1],s:[0,1],c:[3,5],m:[-4,-2]},['D2'],'省了决策成本，份量通常吃不完。'),
+         o('只点素菜，当做好事',{p:[-4,-2],s:[-2,1],c:[-4,-2],m:[2,5]},['H1','R8'],'不等于均衡：外食的素菜常见重油重酱，配餐那一行没有人负责（H2）。')]},
+       {q:'喝什么？',opts:[
+         o('自备水壶',{p:[-3,-1],s:[0,0],c:[-2,-1],m:[2,4]},['R5','D6'],'数值小，但会重复三次。'),
+         o('买瓶装水',{p:[1,2],s:[0,0],c:[1,2],m:[-2,-1]},['R5'],'一次性包装，换来方便。'),
+         o('点一杯珍珠奶茶',{p:[0,1],s:[-1,0],c:[4,6],m:[-4,-2]},['D1'],'口味那一行全胜，这是真实的权衡，不是要你内疚。')]}]},
+
+    {id:'t6',place:'home',npc:'父亲（拿着一张电费单）',theme:'电费单到了，家中开始重新谈空调',
+     say:'「你看看这个数……不是不让你开，是想商量怎么开。」',
+     steps:[
+       {q:'空调怎么调？',opts:[
+         o('25.5℃ 加一把风扇',{p:[-5,-3],s:[0,0],c:[-7,-4],m:[3,6]},['R6','D1'],'IPCC 第 5 章列举的高潜行动就有 cooling setpoint adjustments；省下的电是从背上那层薄汗里省出来的。'),
+         o('照旧 22℃，不要动',{p:[2,4],s:[0,0],c:[4,6],m:[-4,-2]},['R6'],'舒适有价，四本账照记，不加评语。'),
+         o('全日关掉，开窗对流',{p:[-7,-4],s:[-1,0],c:[-10,-6],m:[5,8]},['R6','D3'],'环境与可用钱最好，但潮湿、噪音、热得睡不着，接受度那一行会抗议。')]},
+       {q:'冰箱怎么用？',opts:[
+         o('先想清楚再一次开门，拿齐就关',{p:[-2,-1],s:[0,0],c:[-2,-1],m:[1,3]},['R6'],'教科书最爱提的那一类：方向对，量级小。'),
+         o('开着门慢慢挑',{p:[1,2],s:[0,0],c:[2,3],m:[-1,0]},['R6'],'方便有价，读数照记。'),
+         o('清空冰箱再重新买过',{p:[3,5],s:[-2,0],c:[1,3],m:[-6,-3]},['R5','D6'],'被清走的那批东西才是最大的浪费。')]},
+       {q:'今日有衣服要洗',opts:[
+         o('冷水洗、攒够一机、晾干',{p:[-4,-2],s:[0,0],c:[-3,-1],m:[2,4]},['F1','R6'],'使用阶段的电与衣物寿命都计入；布料细项未核，区间放宽。'),
+         o('热水洗加烘干，快',{p:[2,4],s:[0,0],c:[3,5],m:[-3,-1]},['F1','R6'],'烘干是洗衣链条里最耗电的一段之一；具体数值本轮未核。'),
+         o('送到洗衣店，不用管',{p:[-1,1],s:[0,0],c:[3,5],m:[-5,-3]},['D2'],'外判之后，用了多少水电你不会知道，所以区间最宽。')]}]},
+
+    {id:'t7',place:'market',npc:'街市摊主',theme:'收摊前，替家里买明日两顿菜',
+     say:'「今天的菜心很好，多拿一把，算便宜些给你。」',
+     steps:[
+       {q:'买什么？',opts:[
+         o('邻近产区当季菜＋一块豆腐',{p:[-6,-4],s:[2,4],c:[1,3],m:[3,6]},['H1','R2'],'当季、少包装、步行可达；豆腐配维生素 C 才补得到铁。'),
+         o('进口冷冻蔬菜包，耐放',{p:[-2,0],s:[0,1],c:[0,2],m:[-3,-1]},['D2'],'耐放是事实，冷冻链与包装也是事实。'),
+         o('平价冷冻鱼柳，不问来源',{p:[-6,-3],s:[1,3],c:[1,3],m:[3,6]},['H3','D2'],'营养与价格都赢，环境那一格给不出确定答案——来源、捕捞方式、认证全部未知，所以区间最宽。')]},
+       {q:'怎么装？',opts:[
+         o('自备袋，逐样散装挑',{p:[-3,-1],s:[0,0],c:[-2,-1],m:[1,3]},['R5','D6'],'稍麻烦，重复三次就有分别。'),
+         o('买超市预先包装好的那一份',{p:[1,2],s:[0,0],c:[2,3],m:[-3,-1]},['R5'],'省时间，包装归你。'),
+         o('多拿几个胶袋，分开装不会压坏',{p:[2,3],s:[0,0],c:[1,3],m:[0,0]},['R5'],'保护了菜，代价记在环境那一行。')]},
+       {q:'摊主劝你多买了，怎么办？',opts:[
+         o('留到明日，写清楚先吃哪一份',{p:[-5,-3],s:[0,1],c:[-1,1],m:[2,5]},['R5','D6'],'计划好的「多买」和「放到坏」是两件事。'),
+         o('分给隔壁邻居',{p:[-3,-1],s:[0,0],c:[1,3],m:[-1,1]},['R5','R4'],'吃到就不算浪费，人情那一行也会动。'),
+         o('放进冰箱，之后忘了，倒掉',{p:[4,7],s:[-1,0],c:[-2,0],m:[-4,-2]},['R5'],'整条链条最贵的一份，就是被倒掉的那一份。')]}]},
+
+    {id:'t8',place:'lab',npc:'自己（早上八点出门）',theme:'上学／上班一日，三件事自己决定',
+     say:'「今日要准时，又要省一点，还想舒服一点——三样不可能同时都要。」',
+     steps:[
+       {q:'怎么去？',opts:[
+         o('港铁，再步行一段',{p:[-6,-4],s:[1,2],c:[-4,-2],m:[5,8]},['R3','R6'],'省钱与降低环境负荷同时发生，代价是时间与拥挤。'),
+         o('家里车接送',{p:[1,3],s:[0,0],c:[5,7],m:[-3,-1]},['R3'],'最舒服，也最不用自己决定。'),
+         o('骑自行车／步行',{p:[-7,-5],s:[2,3],c:[-6,-3],m:[6,9]},['R3','R4'],'零成本零排放，但要近、要天气好、要有地方冲洗。')]},
+       {q:'中午吃什么？',opts:[
+         o('带饭，前一晚煮好',{p:[-6,-3],s:[0,2],c:[-6,-3],m:[6,10]},['D1','R2'],'省钱最明显，代价是前一晚要洗饭盒、别人吃热的你吃冷的。'),
+         o('饭堂，跟着餐牌',{p:[-2,0],s:[0,1],c:[1,3],m:[-3,-1]},['D2'],'没法选配料，营养那一行交给了别人。'),
+         o('叫外卖',{p:[2,4],s:[-1,1],c:[3,5],m:[-6,-3]},['D2'],'包装、运送、价格，三项同时计入。')]},
+       {q:'结束之后？',opts:[
+         o('走楼梯上楼',{p:[-2,-1],s:[1,2],c:[-3,-1],m:[0,0]},['R6'],'住二十楼的话，这个选项的代价不是同一个量级。'),
+         o('乘升降机，省点力气',{p:[0,1],s:[0,0],c:[2,3],m:[0,0]},['R6'],'数值小，但日日都发生。'),
+         o('顺路买件新衣服奖励自己',{p:[2,4],s:[0,0],c:[4,6],m:[-7,-4]},['R7','D4','D6'],'省下的钱很容易变成第二笔消费——这就是回弹，不会在当场显示。',{sale:true})]}]}
+  ];
+
+
+  /* ---- 中期决策：单步，但代价与收益隔几天才到账 ---- */
+  var LONG=[
+    {id:'L1',place:'home',npc:'妹妹',theme:'社区厨余回收下周一开始收，要报名吗',
+     say:'「楼下贴了告示，说周一、周四早上收厨余，还发小桶。」',
+     steps:[{q:'这一件事怎么定？',opts:[
+       o('报名，买两个小桶分干湿，周一就开始',{p:[-7,-4],s:[0,1],c:[0,2],m:[-3,-1]},['R2','D6'],
+         '厨余分开收走，垃圾量与气味都会降；先花一点钱买桶。',
+         {delay:{after:3,label:'厨余真的开始收，垃圾少了一袋',fx:{p:[-4,-1],c:[0,2],m:[0,1]},
+                 ref:['R2'],why:'前期的钱和工夫，要过几天才变成实际减量；这一步没做，省下的桶钱会用垃圾费和气味还回去。'}}),
+       o('先看邻居报不报，再决定',{p:[0,1],s:[0,0],c:[-1,0],m:[0,0]},['D3'],
+         '观望不花钱，也不改变任何东西。'),
+       o('不报，嫌分桶麻烦',{p:[2,4],s:[0,0],c:[0,1],m:[0,0]},['D6'],
+         '省了工夫，垃圾照旧，代价落在往后每一天。')
+     ]}]},
+    {id:'L2',place:'home',npc:'父亲',theme:'周三要不要固定成家里的无肉日',
+     say:'「一个礼拜总得有一天轻一点，你们说哪天？」',
+     steps:[{q:'这个约定怎么定？',opts:[
+       o('定周三，写在冰箱贴上，全家照做',{p:[-5,-3],s:[3,5],c:[-5,-2],m:[4,7]},['H1','D6'],
+         '一周一次植物性主菜，省钱又降负荷；口味上先掉一点。',
+         {delay:{after:2,label:'周三无肉日过了一次，家人习惯了',fx:{p:[-2,0],s:[1,2],c:[0,2]},
+                 ref:['D6'],why:'重复会让接受度自己长回来；只做一次就断，接受度会一直卡在第一次的抵触上。'}}),
+       o('这周先试一次，好再说',{p:[-2,0],s:[1,2],c:[-1,1],m:[2,3]},['D6'],
+         '试一次成本低，但没有约定就容易停在这一次。'),
+       o('不定，想吃肉就吃肉',{p:[0,1],s:[-1,0],c:[1,2],m:[0,0]},['D3'],
+         '不约束最省事，也放弃了唯一一个每周重复的机会。')
+     ]}]},
+    {id:'L3',place:'home',npc:'母亲',theme:'厨房水龙头一直在滴水，怎么处理',
+     say:'「滴了一整晚，吵得睡不着，是不是该找人来修？」',
+     steps:[{q:'现在做什么？',opts:[
+       o('自己换胶圈，十几块钱的事',{p:[-3,-2],s:[0,0],c:[0,0],m:[-2,-1]},['R6','D6'],
+         '先花小钱，滴水当场停。',
+         {delay:{after:3,label:'水费单下来，比上期少了一截',fx:{p:[-4,-2],m:[1,3]},
+                 ref:['R6'],why:'漏水是每天二十四小时都在发生的浪费；修好之后收益是连续的。'}}),
+       o('先拿盆接着，水用来浇花',{p:[-1,1],s:[0,0],c:[0,0],m:[0,0]},['R6'],
+         '接住一部分，剩下的照旧滴走。'),
+       o('先不管，等它自己好',{p:[3,5],s:[0,0],c:[-1,0],m:[0,0]},['R6'],
+         '不花钱，但每一天都在漏。')
+     ]}]},
+    {id:'L4',place:'home',npc:'自己',theme:'午膳想省钱又想少用即弃餐具，怎么安排',
+     say:'（早上七点四十，冰箱里还有昨晚的半锅饭。）',
+     steps:[{q:'从明天起怎么办？',opts:[
+       o('买个保温饭盒，前一晚多做一份',{p:[-6,-3],s:[1,3],c:[-2,0],m:[-6,-3]},['R5','D6'],
+         '先掏钱买盒，往后每天省一餐外卖。',
+         {delay:{after:3,label:'带饭带顺了，外卖钱省下来了',fx:{p:[-3,-1],m:[7,10]},
+                 ref:['R5'],why:'一次性投入要几天才回本；回本之后，省下的钱与少掉的即弃餐具都是连续的。'}}),
+       o('继续买外卖，但自带餐具',{p:[-2,0],s:[0,1],c:[0,1],m:[-4,-2]},['R5'],
+         '少了几件即弃餐具，钱还是照花。'),
+       o('带两个面包算了',{p:[-1,0],s:[-2,-1],c:[-4,-2],m:[-2,0]},['H1'],
+         '省钱省时，营养与口味都掉。')
+     ]}]},
+    {id:'L5',place:'home',npc:'妹妹',theme:'阳台那两盆香草，还养不养',
+     say:'「上次买的罗勒都枯了，还要不要再买一盆？」',
+     steps:[{q:'要不要继续养？',opts:[
+       o('换两个好养的品种，固定浇水',{p:[-2,-1],s:[1,2],c:[2,4],m:[-3,-1]},['R5','D6'],
+         '买苗要花钱，但以后每次做菜都能剪一把。',
+         {delay:{after:3,label:'香草长起来了，做菜随手剪',fx:{p:[-2,0],c:[1,3],m:[1,2]},
+                 ref:['R5'],why:'能自己长出来的东西，才谈得上反复取用；只买一次就枯，等于每次都重新买。'}}),
+       o('不养了，要用再买一小包',{p:[0,1],s:[0,0],c:[0,0],m:[-2,0]},['R5'],
+         '每次只买一点，用完就没了。'),
+       o('随便它，活不活看天',{p:[0,0],s:[0,0],c:[-1,0],m:[0,0]},['D3'],
+         '不投入也不指望，最后多半是枯掉。')
+     ]}]},
+    {id:'L6',place:'fabric',npc:'母亲',theme:'那袋旧衣服，留着还是送走',
+     say:'「柜子里一袋穿不下的衣服，扔了可惜，留着又占地方。」',
+     steps:[{q:'这袋衣服怎么办？',opts:[
+       o('挑几件改成抹布和围裙，剩下的再送回收',{p:[-4,-2],s:[0,0],c:[1,2],m:[-1,1]},['F1','R5'],
+         '改造要花一个下午，但省下买抹布的钱。',
+         {delay:{after:3,label:'改出来的抹布用上了，没再买新的',fx:{p:[-2,0],m:[1,2]},
+                 ref:['F1'],why:'布料的成本在制作时就已经付过；多用一次，就是把这笔成本摊薄一次。'}}),
+       o('整袋送去回收箱',{p:[-1,0],s:[0,0],c:[0,0],m:[0,0]},['F1'],
+         '不占地方，但纤维的剩余价值也没用上。'),
+       o('塞回柜子最上面',{p:[0,0],s:[0,0],c:[-1,0],m:[0,0]},['F3'],
+         '什么都没发生，柜子继续满着。')
+     ]}]}
+  ];
+
+  var EVENTS=[
+    {npc:'天文台',text:'酷热天气警告生效，家中空调今日格外难熬。',fx:{c:[-5,-2]},ref:['R6'],why:'天气改变的是每个选项的代价，不是你的对错。'},
+    {npc:'母亲',text:'「今晚父亲回家吃饭，不要又是只有一碟青菜。」',fx:{c:[-4,-2]},ref:['H1','D3'],why:'一桌人肯不肯长期吃，决定方案能不能撑下去。'},
+    {npc:'街市摊主',text:'八号风球刚解除，街市提早收摊，只剩较贵的货。',fx:{m:[-5,-2],c:[-2,-1]},ref:['D2'],why:'供应一变，同一张菜单的成本立刻不同。'},
+    {npc:'校务处',text:'测验周，今日少了一节家政课。',fx:{c:[-2,-1]},ref:['D1'],why:'时间与精力都是资源，只是这四本账没有独立一格。'},
+    {npc:'同学',text:'有人在群组晒出一张旅行机票照片。',fx:{c:[-3,-1]},ref:['R4'],why:'相对剥夺感是真实代价，虽然它不在任何官方表里。'},
+    {npc:'家中',text:'网购节促销，家里购物车又满了。',fx:{},sale:true,ref:['R7','D4'],why:'省下的钱正被无数双手招呼，回弹系数今日上调。'},
+    {npc:'社区中心',text:'贴出一张可持续海鲜指引，档主也讲得出来源。',fx:{},policy:true,ref:['H3','D5'],why:'有制度配套，倡导成功率才会上升。'},
+    {npc:'家中',text:'什么都没发生。日子大多数时候就是这样。',fx:{},ref:['D1'],why:'没有事件本身就是一个对照。'}
+  ];
+
+  /* =========================================================
+     §3 状态机：todo → task（逐步选） → todo → settle → 次日
+     ========================================================= */
+  var g;
+  function snap(){return {p:g.p,c:g.c,m:g.m,s:g.s};}
+  function fresh(){
+    rng=mulberry32(seed);
+    g={day:1,phase:'todo',p:CFG.start.p,c:CFG.start.c,m:CFG.start.m,s:CFG.start.s,
+       pool:[],todayTasks:[],event:null,done:{},cur:null,step:0,diyText:'',
+       log:[],book:[],pending:[],diy:[],unlocked:0,feelGood:0,advocacy:0,burnouts:0,
+       policyBonus:false,saleRisk:false,over:false,stepView:1};
+    TASKS.forEach(function(t){g.pool.push(t.id);});
+    g.longPool=LONG.map(function(t){return t.id;});
+  }
+  function taskById(id){for(var i=0;i<TASKS.length;i++)if(TASKS[i].id===id)return TASKS[i];
+    for(var j=0;j<LONG.length;j++)if(LONG[j].id===id)return LONG[j];return null;}
+  function say(t){g.log.push({day:g.day,t:t});if(g.log.length>160)g.log.shift();}
+  function startDay(){
+    g.phase='todo';g.cur=null;g.step=0;g.diyText='';
+    var ts=[];
+    function drawNormal(){
+      if(!g.pool.length)return;
+      var i=Math.floor(rng()*g.pool.length),id=g.pool.splice(i,1)[0];
+      ts.push(taskById(id));
+    }
+    function drawLong(){
+      if(!g.longPool.length)return;
+      ts.push(taskById(g.longPool.shift()));
+    }
+    if(g.day<=3){drawNormal();drawNormal();}
+    else if(g.day<=5){drawNormal();drawLong();}
+    else {drawLong();drawLong();}
+    g.todayTasks=ts;
+    g.event=pick(EVENTS);
+    if(g.event.policy)g.policyBonus=true;
+    if(g.event.sale)g.saleRisk=true;
+    g.book.push({day:g.day,start:snap(),rows:[],end:null});
+    say('第 '+g.day+' 日 · '+g.event.npc+'：'+g.event.text);
+    moveTo(ts.length?ts[0].place:'home',true);
+    render();
+  }
+  function openTask(id){
+    var t=taskById(id);
+    if(!t||g.done[id]||g.phase==='settle')return;
+    g.cur=t;g.step=0;g.phase='task';g.diyText='';
+    moveTo(t.place,false);render();
+  }
+  function moveTo(place,silent){
+    var el=$('avatar');if(el)el.setAttribute('transform','translate('+PLACEX[place]+',0)');
+    Array.prototype.forEach.call(document.querySelectorAll('.place'),function(n){
+      n.classList.toggle('on',n.getAttribute('data-place')===place);});
+    if(!silent)$('sceneHint').textContent='小人已移动到'+PLACE[place]+'。';
+  }
+  function choose(i){
+    if(g.phase!=='task'||!g.cur)return;
+    var st=g.cur.steps[g.step];
+    var opts=st.opts.concat([{diySlot:true}]);
+    var opt=opts[i];
+    if(!opt)return;
+    if(opt.diySlot){
+      var txt=g.diyText.trim();
+      if(!txt){$('diyInput').focus();return;}
+      g.diy.push({day:g.day,task:g.cur.theme,text:txt});
+      g.done[g.cur.id]=g.done[g.cur.id]||[];
+      g.done[g.cur.id].push({step:st.q,text:'自定：'+txt,diy:true,fx:null,ref:['D7'],
+        why:'自定方案不计入读数——未经校核的数值不应由系统代填。'});
+      say('自定做法：'+txt+'（未计入读数）');
+    }else{
+      g.done[g.cur.id]=g.done[g.cur.id]||[];
+      g.done[g.cur.id].push({step:st.q,text:opt.text,fx:opt.fx,ref:opt.ref,why:opt.why,
+        delay:opt.delay,adv:opt.adv,sale:opt.sale});
+      if(opt.adv)g.advocacy++;
+      if(opt.sale)g.saleRisk=true;
+      if(opt.fx&&opt.fx.p[0]===0&&opt.fx.p[1]===0&&opt.fx.c[1]>0)g.feelGood++;
+    }
+    g.step++;
+    if(g.step>=g.cur.steps.length){
+      say('完成：'+g.cur.theme+'（方案已封存，待结算日一并结算）');
+      g.phase='todo';g.cur=null;g.step=0;
+    }
+    render();
+  }
+  function allDone(){return g.todayTasks.every(function(t){return !!g.done[t.id];});}
+
+  /* =========================================================
+     §4 结算日：所有读数变化与解释，全部后置到这一步
+     ========================================================= */
+  function rndFx(fx){
+    var out={p:0,c:0,m:0,s:0};
+    KEYS.forEach(function(k){var v=fx&&fx[k[0]];out[k[0]]=v?ri(v[0],v[1]):0;});
+    return out;
+  }
+  function fmt(d){
+    return KEYS.filter(function(k){return d[k[0]]!==0;}).map(function(k){
+      return META[k[0]]+' '+sgn(d[k[0]]);}).join(' · ')||'四条都没有变化';
+  }
+  function addRow(row){
+    row.before=snap();
+    g.p=clamp(g.p+row.d.p);g.c=clamp(g.c+row.d.c);
+    g.m=clamp(g.m+row.d.m);g.s=clamp(g.s+row.d.s);
+    row.after=snap();
+    if(row.d.m>0)g.unlocked+=row.d.m*CFG.rebound.saveShare;
+    g.book[g.book.length-1].rows.push(row);
+  }
+  function closeSheet(){$('overlay').hidden=true;}
+  function settleDay(){
+    if(g.phase==='settle')return;
+    g.phase='settle';
+    var before=snap(),settleRows=[];
+
+    /* 事件影响（同样后置） */
+    var ed=rndFx(g.event.fx);
+    addRow({kind:'今日情景',name:g.event.npc+'：'+g.event.text,d:ed,range:g.event.fx,
+            ref:g.event.ref,why:g.event.why});
+    settleRows.push({kind:'今日情景',label:g.event.text,d:ed,range:g.event.fx,
+                     ref:g.event.ref,why:g.event.why});
+
+    /* 逐个任务、逐笔选择 */
+    g.todayTasks.forEach(function(t){
+      var picks=g.done[t.id];
+      if(!picks){
+        addRow({kind:'未处理',name:t.theme+'（这一项没有接）',d:{p:0,c:-5,m:0,s:0},range:null,
+                ref:['D3'],why:'无人处理，家人自行解决，接受度记一笔。'});
+        settleRows.push({kind:'未处理',label:'这一项没有接，家人自行解决',d:{p:0,c:-5,m:0,s:0},
+                         range:null,ref:['D3'],why:'跳过同样是一个选择，与其他选择一样后置结算。'});
+        return;
+      }
+      picks.forEach(function(pk){
+        if(pk.diy){settleRows.push({kind:'自定',label:pk.text,d:{p:0,c:0,m:0,s:0},range:null,
+                    ref:['D7'],why:'未计入读数，需要自行举证。'});return;}
+        var d=rndFx(pk.fx);
+        addRow({kind:t.theme,name:'「'+pk.step+'」→ '+pk.text,d:d,range:pk.fx,
+                ref:pk.ref,why:pk.why,task:t.id});
+        settleRows.push({kind:t.id,label:'「'+pk.step+'」 '+pk.text,d:d,range:pk.fx,
+                         ref:pk.ref,why:pk.why});
+        if(pk.delay)g.pending.push({day:Math.min(CFG.days,pk.delay.after?g.day+pk.delay.after:pk.delay.day),kind:'delay',
+          label:pk.delay.label,fx:pk.delay.fx,ref:pk.delay.ref,why:pk.delay.why});
+        if(pk.adv)g.pending.push({day:CFG.days,kind:'adv',label:'向教师提出调整饭堂餐单'});
+      });
+    });
+
+    /* 延迟后果（之前几日留下的） */
+    g.pending.filter(function(q){return q.day===g.day&&q.kind==='delay';}).forEach(function(q){
+      var d=rndFx(q.fx);
+      addRow({kind:'延迟后果',name:q.label,d:d,range:q.fx,ref:q.ref,why:q.why});
+      settleRows.push({kind:'延迟后果',label:q.label,d:d,range:q.fx,ref:q.ref,why:q.why});
+    });
+    g.pending=g.pending.filter(function(q){return !(q.day===g.day&&q.kind==='delay');});
+
+    /* 接受度崩盘 */
+    if(g.c<CFG.burnBelow&&g.burnouts<CFG.burnMax){
+      var recent=g.book[g.book.length-1].rows.filter(function(r){return r.d.p<0;}).slice(-3);
+      var give=recent.reduce(function(a,r){return a+Math.abs(r.d.p);},0);
+      var back=Math.round(give*CFG.burnGiveback);
+      var cGain=CFG.burnRecover-g.c;
+      addRow({kind:'出去补一顿',name:'家人不愿意吃，外出补了一顿',d:{p:back,c:cGain,m:0,s:0},
+              range:null,ref:['D3','H1'],why:'环境负荷回吐 '+back+' 格。'});
+      g.burnouts++;
+      settleRows.push({kind:'出去补一顿',label:'家人接受不了，外出补了一顿',d:{p:back,c:cGain,m:0,s:0},
+                       range:null,ref:['D3','H1'],why:'此前压下的环境负荷回吐 '+back+' 格，接受度拉回 '+CFG.burnRecover+'。'});
+    }
+
+    /* 最后一日：倡导判定 + 回弹 */
+    if(g.day===CFG.days){
+      g.pending.filter(function(q){return q.kind==='adv';}).forEach(function(q){
+        var A=CFG.advocacy;
+        var chance=A.base+(g.c>=A.highAt?A.high:0)+(g.policyBonus?A.policy:0)-(g.c<A.lowAt?-A.low:0);
+        if(rng()<chance){
+          var win=ri(A.win[0],A.win[1]);
+          addRow({kind:'倡导结果',name:q.label+' 确实推动了改变',d:{p:-win,c:0,m:0,s:0},range:null,
+                  ref:['D5','R9'],why:'判定成功。'});
+          settleRows.push({kind:'倡导结果',label:q.label+' 确实推动了改变',d:{p:-win,c:0,m:0,s:0},
+                           range:null,ref:['D5','R9'],why:'成功率约 35%，不是确定收益。'});
+        }else{
+          settleRows.push({kind:'倡导结果',label:q.label+' 这次什么都没有发生',d:{p:0,c:0,m:0,s:0},
+                           range:null,ref:['D5','R9'],why:'概率本来就不是 100%。'});
+        }
+      });
+      g.pending=g.pending.filter(function(q){return q.kind!=='adv';});
+      var rate=CFG.rebound.rate+(g.saleRisk?CFG.rebound.saleBonus:0);
+      var rebound=Math.round(Math.min(CFG.rebound.cap,g.unlocked*rate));
+      if(rebound>0){
+        addRow({kind:'回弹',name:'省下的钱转投了其他消费',d:{p:rebound,c:0,m:0,s:0},range:null,
+                ref:['D4','R7'],why:'系数 '+rate.toFixed(2)+' × 累计省下 '+g.unlocked.toFixed(1)});
+        settleRows.push({kind:'回弹',label:'省下的钱转投了其他消费',d:{p:rebound,c:0,m:0,s:0},
+                         range:null,ref:['D4','R7'],why:'省下不等于减少，钱会找到别的出口。'});
+      }
+    }
+
+    g.book[g.book.length-1].end=snap();
+    var total={p:0,c:0,m:0,s:0};
+    KEYS.forEach(function(k){total[k[0]]=g[k[0]]-before[k[0]];});
+    say('第 '+g.day+' 日结算：'+fmt(total));
+    renderStatus();
+    showDeltas(total);
+    showSettle(settleRows,total);
+  }
+
+  function showDeltas(d){
+    KEYS.forEach(function(k,i){
+      var el=document.querySelector('.srow[data-k="'+k[0]+'"] .delta');
+      if(!el)return;
+      var v=d[k[0]];
+      if(!v)return;
+      var good=(k[0]==='p'?v<0:v>0);
+      el.textContent=sgn(v);
+      el.className='delta show '+(good?'good':'bad');
+      setTimeout(function(){el.classList.remove('show');},2600);
+    });
+  }
+
+  function numLine(d){
+    return KEYS.filter(function(k){return d[k[0]]!==0;}).map(function(k){
+      var v=d[k[0]],good=(k[0]==='p'?v<0:v>0);
+      return '<span class="num '+(good?'g':'b')+'">'+META[k[0]]+' '+sgn(v)+'</span>';
+    }).join(' ')||'<span class="num">四条都没有变化</span>';
+  }
+  function rangeLine(r){
+    if(!r)return '';
+    return KEYS.filter(function(k){var q=r[k[0]];return q&&(q[0]!==0||q[1]!==0);})
+      .map(function(k){return META[k[0]]+' '+rngTxt(r[k[0]][0],r[k[0]][1]);}).join(' / ');
+  }
+  function showSettle(rows,total){
+    var groups=[],byTask={};
+    rows.forEach(function(r){
+      var key=(r.kind==='今日情景'||r.kind==='延迟后果'||r.kind==='出去补一顿'||
+               r.kind==='回弹'||r.kind==='倡导结果'||r.kind==='未处理'||r.kind==='自定')?'__extra':r.kind;
+      if(!byTask[key]){byTask[key]=[];groups.push(key);}
+      byTask[key].push(r);
+    });
+    var html='<h2>第 '+g.day+' 日 · 结算</h2><div class="sub">此前所有选择都没有显示过数值。现在逐笔拆开。'+
+      (budget?'　<span style="letter-spacing:.06em">用时 '+mmss(elapsed())+' / '+mmss(budget)+'</span>':'')+'</div>';
+    groups.forEach(function(key){
+      var t=key==='__extra'?null:taskById(key);
+      html+='<div class="settleTask"><div class="h">'+(t?esc(t.theme):'情景 · 延迟 · 机制')+
+        (t?'<span class="npc">'+esc(t.npc)+'</span>':'')+'</div>';
+      byTask[key].forEach(function(r){
+        var rl=rangeLine(r.range);
+        html+='<div class="settleLine"><span class="pick">'+esc(r.label)+'</span>　'+numLine(r.d)+
+          (rl?'<span class="why">模糊区间：'+esc(rl)+'</span>':'')+
+          '<span class="why">'+esc(r.why||'')+(r.ref&&r.ref.length?'　<span class="refs">'+r.ref.map(function(c){return '<button class="refbtn" data-ref="'+esc(c)+'">'+esc(c)+'</button>';}).join('')+'</span>':'')+'</span></div>';
+      });
+      html+='</div>';
+    });
+    html+='<h3>今日合计</h3><div class="totals">'+KEYS.map(function(k){
+      var key=k[0],val=total[key],good=(key==='p'?val<0:val>0);
+      return '<div class="tot '+key+'"><div class="n">'+META[key]+'</div><div class="v '+
+        (val===0?'z':(good?'ok':'no'))+'">'+sgn(val)+'</div></div>';
+    }).join('')+'</div>'+
+    '<div class="extra">四条读数与右上角状态栏，现在才变动。这个安排是刻意的：<b>如果选择当时就看到数字，玩家处理的就不是情境，而是算术题</b>（D7）。'+
+    '方向取自来源，刻度是教学映射，不是排放因子、营养素含量或港币（D1）。</div>'+
+    '<div class="actions"><button class="primary" id="nextBtn">'+
+    (g.day>=CFG.days?'查看总结算':'进入第 '+(g.day+1)+' 日')+'</button>'+
+    '<button class="mini" id="exportBtn2">导出账本</button></div>';
+    $('sheet').innerHTML=html;
+    $('overlay').hidden=false;
+    $('nextBtn').onclick=function(){
+      closeSheet();
+      if(timedOut||g.day>=CFG.days)finish();else{g.day++;startDay();}
+    };
+    $('exportBtn2').onclick=exportLog;
+    if(timedOut)markTimeUp();
+  }
+
+  /* =========================================================
+     §5 总结算 / 逐日复盘 / 规则 / 导出
+     ========================================================= */
+  function finish(){
+    g.over=true;g.phase='end';
+    stopClock();
+    var lines=[];
+    var early=timedOut&&g.day<CFG.days;
+    lines.push((early?'第 '+g.day+' 日之后':'第 '+CFG.days+' 日之后')+'：环境负荷 '+CFG.start.p+'→'+g.p+'，营养均衡 '+CFG.start.s+'→'+g.s+
+      '，口味与接受度 '+CFG.start.c+'→'+g.c+'，可用钱 '+CFG.start.m+'→'+g.m+'。');
+    if(early)lines.push('课堂时间到，这一局停在第 '+g.day+' 日——后面几日没有走完，读数是已经走过的那几天的实际结果。');
+    if(budget)lines.push('课堂用时 '+mmss(elapsed())+'，预算 '+mmss(budget)+'。');
+    if(g.burnouts>0)lines.push('家人「出去补一顿」'+g.burnouts+' 次。');
+    if(g.feelGood>0)lines.push('有 '+g.feelGood+' 个选择只改变了感受，没有改变任何读数。');
+    if(g.diy.length>0)lines.push('你自定了 '+g.diy.length+' 个做法，全部未计入读数。');
+    var unrec=[
+      '仪表只记了四条。食物安全、长者／小童／孕妇的特殊营养需要、时间、体面、家人的感受，都没有刻度。',
+      '这些格子是相对刻度，不是千克 CO₂、不是克蛋白质、不是港币。真实配餐要查成分表与份量。',
+      '「产地」「可持续」「认证」的实际含量取决于供应链与标签制度；模拟器只给方向，不替你验货。',
+      '没有胜利条件、没有徽章、没有等级、没有分享按钮。你没有被打分。'
+    ];
+    var html='<h2>'+(early?'第 '+g.day+' 日 · 总结算':'第 '+CFG.days+' 日 · 总结算')+'</h2><div class="sub">种子 '+seed+'　｜　不是评分，是把'+
+      (early?'已经走过的这几天':CFG.days+' 天')+'的四本账摊开</div>'+
+      '<div class="totals">'+KEYS.map(function(k){
+        return '<div class="tot '+k[0]+'"><div class="n">'+META[k[0]]+'</div><div class="v ax-'+k[0]+'">'+g[k[0]]+'</div></div>';}).join('')+'</div>'+
+      '<div class="extra" style="font-size:13px">'+esc(lines.join(' '))+'</div>'+
+      '<h3>逐日复盘 · 一日一日对账</h3><div class="stepbar">'+
+      '<button class="mini" id="prevDay">← 前一日</button><span id="stepLabel"></span>'+
+      '<button class="mini" id="nextDayBtn">后一日 →</button>'+
+      '<span style="font-size:10.5px;color:var(--muted)">起值 + 各笔实际变化 = 止值；已按 0–100 截断</span></div>'+
+      '<div id="daySummary"></div><div id="dayTable"></div>'+
+      '<h3>仪表没有记录的事</h3><div class="unrec">'+unrec.map(function(x){return '· '+x;}).join('<br>')+'</div>'+
+      '<div class="actions"><button class="primary" id="againBtn">同一种子再来一次</button>'+
+      '<button class="mini" id="newSeedBtn">换一局</button><button class="mini" id="exportBtn3">导出账本</button>'+
+      '<a class="mini" href="review.html">去完成轻考核</a></div>';
+    $('sheet').innerHTML=html;$('overlay').hidden=false;
+    $('againBtn').onclick=function(){boot(seed);};
+    $('newSeedBtn').onclick=function(){boot((Date.now()^Math.floor(Math.random()*1e9))>>>0);};
+    $('exportBtn3').onclick=exportLog;
+    g.stepView=g.book.length||1;
+    $('prevDay').onclick=function(){g.stepView=Math.max(1,g.stepView-1);renderStep();};
+    $('nextDayBtn').onclick=function(){g.stepView=Math.min(g.book.length||1,g.stepView+1);renderStep();};
+    renderStep();
+  }
+  function renderStep(){
+    var b=g.book[g.stepView-1];if(!b)return;
+    $('stepLabel').textContent='第 '+b.day+' / '+g.book.length+' 日';
+    var sum={p:0,c:0,m:0,s:0},end=b.end||snap();
+    var rows=b.rows.map(function(r){
+      var real={};KEYS.forEach(function(k){real[k[0]]=r.after[k[0]]-r.before[k[0]];sum[k[0]]+=real[k[0]];});
+      return '<tr><td>'+esc(r.kind)+'</td><td>'+esc(r.name)+
+        '<div style="font-size:10.5px;color:var(--muted)">'+esc(rangeLine(r.range))+'　依据 '+(r.ref||[]).join('、')+'</div></td>'+
+        KEYS.map(function(k){var v=real[k[0]];return '<td class="'+(v?(k[0]==='p'?(v<0?'g':'b'):(v>0?'g':'b')):'')+'">'+sgn(v)+'</td>';}).join('')+
+        '<td>'+r.after.p+'/'+r.after.s+'/'+r.after.c+'/'+r.after.m+'</td></tr>';
+    }).join('');
+    $('dayTable').innerHTML='<table><thead><tr><th>类型</th><th>事项 · 区间 · 依据</th>'+
+      KEYS.map(function(k){return '<th>'+META[k[0]].replace(' / 接受度','')+'</th>';}).join('')+
+      '<th>结算后 环/营/味/钱</th></tr></thead><tbody>'+
+      (rows||'<tr><td colspan="7">这一日没有结算任何一笔。</td></tr>')+
+      '<tr><th>合计</th><th>起 '+b.start.p+'/'+b.start.s+'/'+b.start.c+'/'+b.start.m+
+      ' → 止 '+end.p+'/'+end.s+'/'+end.c+'/'+end.m+'</th>'+
+      KEYS.map(function(k){return '<th>'+sgn(sum[k[0]])+'</th>';}).join('')+'<th></th></tr></tbody></table>';
+    var dp=sum.p,ds=sum.s,dc=sum.c,dm=sum.m,tail;
+    if(dp<0&&ds<0)tail='环境负荷下降，营养同时下降——这种配法需要补回 B12、铁与蛋白质质量。';
+    else if(dp<0&&dc<0)tail='环境改善是拿口味与家人接受度换来的，未必撑得过一周。';
+    else if(dp<0&&dm<0)tail='这次是花钱买来的减排。';
+    else if(dp>=0&&(dc<0||dm<0||ds<0))tail='今日付出了代价，环境读数没有变化。';
+    else if(dp<0&&ds>=0&&dc>=0)tail='这一日没有靠牺牲营养与口味去换环境读数。';
+    else tail='四条基本没有变化。';
+    $('daySummary').innerHTML='<b>这一日真正的权衡：</b>环境 '+sgn(dp)+' · 营养 '+sgn(ds)+
+      ' · 口味 '+sgn(dc)+' · 钱 '+sgn(dm)+'。'+esc(tail);
+  }
+  function showRules(){
+    var A=CFG.advocacy,R=CFG.rebound;
+    var rows=[
+      ['怎么玩','每天两件事，每件事连着做三步选择；做完（或不想做）就按「结算日」，'+CFG.days+' 天走完。'],
+      ['为什么当时看不到数字','数字要等结算日才出现。当场就看见分数，你算的就不是「今晚这顿饭怎么办」。'],
+      ['四条读数','环境负荷：越低越好；营养均衡、口味与接受度、可用钱：越高越好。都是 0–100 的相对刻度，不是吨数，也不是港币。'],
+      ['为什么每次差一点','同一件事因季节、产地、家里习惯而不同，所以每一笔给的是一个范围，结算时才在范围里取一个数。'],
+      ['家人吃不下会怎样','接受度掉得很低，家人会自己出去补一顿：最近省下的环境好处要退回一部分，接受度也拉回来。一局最多两次。'],
+      ['有些事几天后才见效','换水龙头胶圈、定周三无肉日、报名厨余回收、买保温饭盒带饭——当天只花成本，过两三天才看到回报。'],
+      ['省下来的钱去哪了','省下的钱常常花到别处，最后一天会有一截抵回来。'],
+      ['向学校提议','不直接改读数；最后一天看会不会真的推动，成了才有一点结果。'],
+      ['自己写一个做法','不计入读数，要你自己说明依据。'],
+      ['给老师','整局默认 '+Math.round(CFG.timeBudget/60)+' 分钟。网址后加 ?minutes=7 改时长，加 ?timer=0 关掉计时。']
+    ];
+    $('sheet').innerHTML='<h2>怎么玩 · 这几条就够了</h2><div class="sub">没有隐藏规则，也没有打分</div>'+
+      '<div class="kv">'+rows.map(function(r){return '<div class="k">'+r[0]+'</div><div>'+esc(r[1])+'</div>';}).join('')+'</div>'+
+      '<div class="extra" style="font-size:12px">资料来源：衞生防護中心《均衡素食的要点》、漁護署《關於漁業》、IPCC AR6 第三工作组第五章、Poore &amp; Nemecek（只取方向）。结算页每一笔后面的小按钮可以点开看摘录。</div>'+
+      '<div class="actions"><button class="primary" id="closeRules">知道了</button></div>';
+    $('overlay').hidden=false;
+    $('closeRules').onclick=closeSheet;
+  }
+  function exportLog(){
+    var out='一周菜篮 · 情景模拟器 · 本局记录\nseed: '+seed+'\n\n【事件记录】\n'+
+      g.log.map(function(l){return '[D'+l.day+'] '+l.t;}).join('\n')+'\n\n【逐日账本】\n';
+    g.book.forEach(function(b){
+      out+='\n第 '+b.day+' 日　起 环/营/味/钱 '+b.start.p+'/'+b.start.s+'/'+b.start.c+'/'+b.start.m+
+        '　止 '+(b.end?b.end.p+'/'+b.end.s+'/'+b.end.c+'/'+b.end.m:'—')+'\n';
+      b.rows.forEach(function(r){out+='  · '+r.kind+'｜'+r.name+'｜'+fmt(r.d)+'｜依据 '+(r.ref||[]).join('、')+'\n';});
+    });
+    out+='\n自定做法：\n'+(g.diy.map(function(d){return '· 第'+d.day+'日 '+d.task+' → '+d.text;}).join('\n')||'（无）')+
+      '\n\n说明：数值为 0–100 相对刻度，不是吨数、营养素含量或港币。依据编号见 README.md。\n';
+    var blob=new Blob([out],{type:'text/plain;charset=utf-8'});
+    var a=document.createElement('a');a.href=URL.createObjectURL(blob);
+    a.download='cailan-'+seed+'.txt';document.body.appendChild(a);a.click();
+    setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},500);
+  }
+
+  /* =========================================================
+     §6 渲染
+     ========================================================= */
+  function renderStatus(){
+    var col=function(k,v){return k==='p'?(v>=75?'#b8503f':(v>=50?'#b1792b':'#3f7461')):
+      (v>=60?'#3f7461':(v>=30?'#b1792b':'#b8503f'));};
+    $('status').innerHTML='<div class="st"><b>状态栏</b><span class="daytag">第 '+g.day+' / '+CFG.days+' 日'+
+      (g.phase==='settle'?' · 已结算':' · 未结算')+'</span></div>'+
+      '<div class="sub">读数只在结算日变动。选择时不会预告后果。</div>'+
+      KEYS.map(function(k){var v=g[k[0]];
+        return '<div class="srow" data-k="'+k[0]+'"><span class="nm">'+META[k[0]]+'</span>'+
+          '<span class="track"><span class="fill" style="display:block;width:'+v+'%;background:'+col(k[0],v)+'"></span></span>'+
+          '<span class="vl" style="color:'+col(k[0],v)+'">'+v+'</span><span class="delta"></span></div>';
+      }).join('')+
+      '<div class="foot">p 环境负荷（低好）· s 营养 · c 口味／接受度 · m 可用钱<br>'+
+      '今日 '+g.todayTasks.filter(function(t){return !!g.done[t.id];}).length+' / '+g.todayTasks.length+' 项已封存</div>';
+  }
+  function render(){
+    $('seedLabel').textContent='seed '+seed;
+    renderStatus();
+    $('log').innerHTML=g.log.slice().reverse().map(function(l){
+      return '<div class="le"><span class="d">D'+l.day+'</span>'+esc(l.t)+'</div>';}).join('');
+
+    if(g.phase==='task'&&g.cur){
+      var t=g.cur,st=t.steps[g.step];
+      var opts=st.opts.concat([{diySlot:true,text:'自己写一个做法…',hint:'不计入读数，留待自行举证'}]);
+      var h='<div id="taskHead"><div class="npcLine">'+esc(PLACE[t.place])+' · '+esc(t.npc)+'</div>'+
+        '<div class="theme">'+esc(t.theme)+'</div><div class="say">'+esc(t.say)+'</div></div>'+
+        '<div class="stepnav">第 '+(g.step+1)+' / '+t.steps.length+' 步　·　全部选完后封存，全程不显示数值</div>'+
+        '<div class="qtext">'+esc(st.q)+'</div><div class="opts">'+
+        opts.map(function(op,i){
+          return '<button class="opt'+(op.diySlot?' diy':'')+'" data-opt="'+i+'">'+
+            '<span class="bullet">'+(op.diySlot?'✎':String.fromCharCode(65+i))+'</span>'+
+            '<span class="ot">'+esc(op.text)+(op.hint?'<span class="hint">'+esc(op.hint)+'</span>':'')+'</span></button>';
+        }).join('')+'</div>'+
+        '<div id="diyBox" hidden><input id="diyInput" maxlength="48" placeholder="你会怎么做？写一句即可">'+
+        '<div class="row"><button class="mini" id="diyOk">采用这个做法</button>'+
+        '<button class="mini" id="diyCancel">返回选项</button></div></div>'+
+        '<div class="chosen"><b>已作出的决定：</b><br>'+
+        (g.done[t.id]||[]).map(function(x){return '· '+esc(x.step)+' → '+esc(x.text);}).join('<br>')+'</div>'+
+        '<div class="btnrow"><button class="mini" id="backTodo">返回今日清单</button></div>';
+      $('mainPane').innerHTML=h;
+      Array.prototype.forEach.call(document.querySelectorAll('[data-opt]'),function(b){
+        b.onclick=function(){
+          var i=parseInt(b.getAttribute('data-opt'),10);
+          if(opts[i].diySlot){$('diyBox').hidden=false;$('diyInput').focus();}
+          else choose(i);
+        };
+      });
+      $('diyOk').onclick=function(){choose(st.opts.length);};
+      $('diyCancel').onclick=function(){$('diyBox').hidden=true;};
+      $('diyInput').oninput=function(e){g.diyText=e.target.value;};
+      $('backTodo').onclick=function(){g.phase='todo';g.cur=null;render();};
+      return;
+    }
+
+    var eh='<h2>今日清单 · 第 '+g.day+' 日</h2>'+
+      '<div style="border:1px dashed var(--line);background:#fbf9f3;border-radius:4px;padding:9px 11px;margin-bottom:11px;font-size:12.5px;line-height:1.7">'+
+      '<b>'+esc(g.event.npc)+'：</b>'+esc(g.event.text)+'<br><span style="font-size:11px;color:var(--muted)">情景影响同样等到结算日才计入。</span></div>';
+    g.todayTasks.forEach(function(t){
+      var done=!!g.done[t.id];
+      eh+='<button class="todo'+(done?' done':'')+'" data-task="'+t.id+'" '+(done?'disabled':'')+'>'+
+        '<span class="box"></span><span><span class="npc">'+esc(t.npc)+'</span>'+
+        '<span class="placeTag">'+esc(PLACE[t.place])+'</span>'+
+        '<div class="tt">'+esc(t.theme)+'</div><div class="desc">'+
+        (done?'方案已封存，待结算日':'点击进入，做一连串选择')+'</div></span></button>';
+    });
+    eh+='<div class="btnrow"><button class="primary" id="settleBtn"'+(g.phase==='settle'?' disabled':'')+'>结算日</button>'+
+      '<span style="font-size:11px;color:var(--muted)">'+
+      (allDone()?'两项都已完成，可以结算。':'未完成也可以结算；没有接的那一项会有它自己的后果。')+'</span></div>';
+    $('mainPane').innerHTML=eh;
+    Array.prototype.forEach.call(document.querySelectorAll('[data-task]'),function(b){
+      b.onclick=function(){openTask(b.getAttribute('data-task'));};
+    });
+    $('settleBtn').onclick=settleDay;
+  }
+
+  /* =========================================================
+     §7 启动 / 自动演示
+     ========================================================= */
+  function boot(s){
+    seed=s>>>0;fresh();closeSheet();
+    stopClock();t0=Date.now();timedOut=false;
+    if(budget){tickClock();clockTimer=setInterval(tickClock,250);}
+    say('开局。四本账：环境负荷 '+CFG.start.p+' / 营养 '+CFG.start.s+
+      ' / 口味 '+CFG.start.c+' / 可用钱 '+CFG.start.m+'。');
+    startDay();
+  }
+  $('restart').onclick=function(){boot(seed);};
+  $('rulesBtn').onclick=showRules;
+  Array.prototype.forEach.call(document.querySelectorAll('.place'),function(n){
+    n.onclick=function(){
+      var pl=n.getAttribute('data-place');moveTo(pl,false);
+      if(g.phase==='todo'){
+        var t=g.todayTasks.filter(function(x){return x.place===pl&&!g.done[x.id];})[0];
+        if(t)openTask(t.id);
+        else $('sceneHint').textContent=PLACE[pl]+'今日没有未完成的任务。你仍然可以走过来。';
+      }
+    };
+  });
+
+  /* ---- 依据卡片：结算页点编号，弹出原文摘录 ---- */
+  (function(){
+    var card=document.createElement('div');
+    card.className='refcard';card.hidden=true;
+    card.innerHTML='<div class="rc-box"><div class="rc-head"><b id="rcCode"></b>'+
+      '<span class="rc-tag">资料来源</span><button id="rcClose">关闭</button></div>'+
+      '<div class="rc-body" id="rcBody"></div>'+
+      '<div class="rc-note">摘录为中文原文或来源说明；需要完整文件可查课程资料夹。</div></div>';
+    document.body.appendChild(card);
+    function show(code){
+      $('rcCode').textContent=code;
+      $('rcBody').textContent=REF[code]||'（这一条还没有录入摘录。）';
+      card.hidden=false;
+    }
+    document.addEventListener('click',function(e){
+      var t=e.target;
+      var b=t&&t.closest?t.closest('.refbtn'):null;
+      if(b){e.preventDefault();show(b.getAttribute('data-ref'));return;}
+      if(t===card||(t&&t.id==='rcClose'))card.hidden=true;
+    });
+    document.addEventListener('keydown',function(e){if(e.key==='Escape')card.hidden=true;});
+  })();
+
+  boot(seed);
+
+  /* 自动演示：按剩余时间反推步速，保证在预算内走完 */
+  function demoPace(){
+    if(!budget)return CFG.demoInterval;
+    var left=remaining()*1000;
+    var acts=(CFG.days-g.day+1)*9+2;
+    return Math.max(120,Math.min(CFG.demoInterval,left/Math.max(1,acts)));
+  }
+  if(autoDemo){
+    (function loop(){
+      if(g.over)return;
+      var onSheet=!$('overlay').hidden;
+      var wait=onSheet
+        ? (budget?Math.min(2600,Math.max(450,remaining()*100)):2200)
+        : demoPace();
+      setTimeout(function(){
+        if(g.over)return;
+        if(!$('overlay').hidden){var nb=$('nextBtn');if(nb)nb.click();}
+        else if(g.phase==='task'){choose(0);}
+        else if(g.phase==='todo'){
+          var t=g.todayTasks.filter(function(x){return !g.done[x.id];})[0];
+          if(t)openTask(t.id);else settleDay();
+        }
+        loop();
+      },wait);
+    })();
+  }
+})();
+</script>
+</body>
+</html>
