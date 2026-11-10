@@ -236,9 +236,9 @@ tests/selftest.gd        headless 断言
 
 ### 4.6 导出
 
-- Windows：`--export-release "Windows Desktop"` 到 `build/win/`。
-- Web：`--export-release "Web"` 到 `build/web/`，`thread_support=false`，可直接丢 GitHub Pages。
-- 导出产物不进仓库（`build/` 进 `.gitignore`）。
+- Windows：`--export-release "Windows Desktop"` 到 `godot/build/win/`，再由 `tools/package.ps1` 收进 `dist/`。
+- Web：`--export-release "Web"` 到 `godot/build/web/`，`thread_support=false`，可直接丢静态站。
+- 导出产物不进仓库（`dist/` 与 `godot/build/` 都进 `.gitignore`）；发布走 GitHub Releases。
 
 ---
 

@@ -50,7 +50,23 @@ $p = "E:\godot_workplace\E-tech\tradeoff-sim\godot"
 
 ## 导出：一份 exe，一份 web
 
-`godot/export_presets.cfg` 里两个 preset，都指向 `godot/build/`：
+一条命令就够（Godot 导出到 `godot/build/`，脚本再收进 `dist/`）：
+
+```powershell
+pwsh -File tools/package.ps1            # 导出 + 压缩 + 摆进 dist/
+pwsh -File tools/package.ps1 -SkipExport  # 只重新压缩，不碰 Godot
+```
+
+产出：
+
+| 文件 | 说明 |
+|---|---|
+| `dist/win/One-Week-Basket.exe` | Windows 单文件，pck 已内嵌，双击即跑 |
+| `dist/one-week-basket-web.zip` | 解压到任意静态站；**必须走 http(s)**，双击 `index.html` 打不开（wasm 要同源） |
+
+`dist/` 不进仓库（`.gitignore` 挡着），发布走 GitHub Releases。
+
+要手动跑，`godot/export_presets.cfg` 里两个 preset 的输出路径是 `godot/build/`：
 
 ```powershell
 $g = "D:\Godot_v4.7.2-stable_win64.exe\Godot_v4.7.2-stable_win64_console.exe"
@@ -59,11 +75,8 @@ $p = "E:\godot_workplace\E-tech\tradeoff-sim\godot"
 # Windows：单文件，pck 已内嵌，拷走就能跑
 & $g --headless --path $p --export-release "Windows Desktop" "$p\build\win\One-Week-Basket.exe"
 
-# Web：一个目录，必须走 http 服务，双击 index.html 打不开（wasm 需要同源）
+# Web：一个目录，必须走 http 服务
 & $g --headless --path $p --export-release "Web" "$p\build\web\index.html"
-
-# 部署前顺手压一个包
-Compress-Archive -Path "$p\build\web\*" -DestinationPath "$p\build\one-week-basket-web.zip" -Force
 ```
 
 实测体积：exe **45.8 MB**（内嵌 pck）；web **wasm 38.6 MB + pck 226 KB + js 273 KB**，zip 后 **9.9 MB**。

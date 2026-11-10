@@ -29,7 +29,9 @@
 
 | 产物 | 路径 | 怎么用 |
 |---|---|---|
-| Windows 单文件 | `godot/build/win/One-Week-Basket.exe` | 双击。pck 已内嵌，45.8 MB，拷到哪都能跑 |
-| Web | `godot/build/web/` + `godot/build/one-week-basket-web.zip` | 整目录丢到任意静态站。**必须走 http(s)**，双击 `index.html` 打不开（wasm 要同源） |
+| Windows 单文件 | `dist/win/One-Week-Basket.exe` | 双击。pck 已内嵌，45.8 MB，拷到哪都能跑 |
+| Web | `dist/one-week-basket-web.zip` | 解压丢到任意静态站。**必须走 http(s)**，双击 `index.html` 打不开（wasm 要同源） |
+
+`dist/` 不进仓库；正式发布走 GitHub Releases（见 [`04-build.md`](04-build.md) 的打包一节）。
 
 Web 版用的是不开线程的构建（`variant/thread_support=false`），所以不需要 COOP/COEP 响应头。

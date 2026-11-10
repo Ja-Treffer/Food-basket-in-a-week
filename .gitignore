@@ -1,15 +1,24 @@
-# 临时件与备份（.tmp/ 是垃圾箱，不提交）
+# 临时件与本地备份（.tmp/ 是垃圾箱，不提交）
 .tmp/
 
-# Godot 导入缓存
+# 编译产物：只发 Release，不进仓库
+dist/
+godot/build/
+*.pck
+*.wasm
+*.exe
+
+# Godot 导入缓存与编辑器状态
 godot/.godot/
+godot/.import/
+godot/export_presets.cfg.bak
 
 # 依赖与系统垃圾
 node_modules/
 Thumbs.db
 .DS_Store
-# 构建产物不进仓库（要发布走 GitHub Releases）
-godot/build/
-godot/export_presets.cfg.bak
-*.pck
-*.wasm
+desktop.ini
+
+# 编辑器
+.vscode/
+.idea/
