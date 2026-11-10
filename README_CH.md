@@ -21,8 +21,8 @@ NPC 派任务 → 连续几步「不带数字」的选择 → 结算日才结账
 校验（`sha256`）：
 
 ```
-One-Week-Basket.exe       cddd325555ad578bf23d5134792daaaccfaaba99257d76db6dac1fbc435ad4b5
-one-week-basket-web.zip   5e1b19c13b2b9bb6e948b7c998ccd8e0cf836a1617fba0e8fe2bdc32e25f9c4c
+One-Week-Basket.exe       4e2c464b716e195e2ab2363fce9f510a654f55f78297d8a34a2ccda3db52b6b6
+one-week-basket-web.zip   3c69ceba72702365a2ebedcfb8017e5c29fcd29af381e2e437115f19b985a363
 ```
 
 仓库里**没有**编译产物 —— `dist/` 与 `godot/build/` 都被 `.gitignore` 挡着，发布只走 Release。
