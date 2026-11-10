@@ -15,17 +15,25 @@ NPC 派任务 → 连续几步「不带数字」的选择 → 结算日才结账
 
 | 文件 | 用法 | 体积 |
 |---|---|---|
-| `One-Week-Basket.exe` | Windows 单文件，双击即玩（pck 已内嵌） | 46 MB |
-| `one-week-basket-web.zip` | 解压丢到任意静态站；**必须走 http(s)**，双击 `index.html` 打不开 | 10 MB |
+| `One-Week-Basket.exe` | Windows 单文件，双击即玩（pck 已内嵌） | 46.4 MB |
+| `one-week-basket-web.zip` | 解压丢到任意静态站；**必须走 http(s)**，双击 `index.html` 打不开 | 10.5 MB |
 
 校验（`sha256`）：
 
 ```
-One-Week-Basket.exe       54782db94ac940be36096b57fdaa520dcb66a09e7b201b3529c9e1d0fbe7582d
-one-week-basket-web.zip   096fa7e69ca1a92bc9682e488de17c7f154edace786e4ce456432e057f74a4fe
+One-Week-Basket.exe       cddd325555ad578bf23d5134792daaaccfaaba99257d76db6dac1fbc435ad4b5
+one-week-basket-web.zip   5e1b19c13b2b9bb6e948b7c998ccd8e0cf836a1617fba0e8fe2bdc32e25f9c4c
 ```
 
 仓库里**没有**编译产物 —— `dist/` 与 `godot/build/` 都被 `.gitignore` 挡着，发布只走 Release。
+
+## 在线版（GitHub Pages）
+
+| 页面 | 地址 |
+|---|---|
+| 入口 | <https://ja-treffer.github.io/Food-basket-in-a-week/> |
+| 玩模拟器 | <https://ja-treffer.github.io/Food-basket-in-a-week/html_demo/> |
+| 做轻考核 | <https://ja-treffer.github.io/Food-basket-in-a-week/html_review/> |
 
 ## 浏览器里直接开
 

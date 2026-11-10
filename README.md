@@ -17,10 +17,25 @@ Grab both files from [**Releases**](https://github.com/Ja-Treffer/Food-basket-in
 
 | File | Use | Size |
 |---|---|---|
-| `One-Week-Basket.exe` | Windows, single file, double-click to play (pck embedded) | 46 MB |
-| `one-week-basket-web.zip` | Unzip onto any static host; **must be served over http(s)** — opening `index.html` from disk will not work | 10 MB |
+| `One-Week-Basket.exe` | Windows, single file, double-click to play (pck embedded) | 46.4 MB |
+| `one-week-basket-web.zip` | Unzip onto any static host; **must be served over http(s)** — opening `index.html` from disk will not work | 10.5 MB |
 
 No build artifacts live in this repository: `dist/` and `godot/build/` are both in `.gitignore`, publishing goes through Releases only.
+
+## Live, right now
+
+| What | URL |
+|---|---|
+| Hub | <https://ja-treffer.github.io/Food-basket-in-a-week/> |
+| Simulator | <https://ja-treffer.github.io/Food-basket-in-a-week/html_demo/> |
+| Quick check | <https://ja-treffer.github.io/Food-basket-in-a-week/html_review/> |
+
+Checksums (`sha256`):
+
+```
+One-Week-Basket.exe       cddd325555ad578bf23d5134792daaaccfaaba99257d76db6dac1fbc435ad4b5
+one-week-basket-web.zip   5e1b19c13b2b9bb6e948b7c998ccd8e0cf836a1617fba0e8fe2bdc32e25f9c4c
+```
 
 ## Or just open it in a browser
 
