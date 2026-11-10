@@ -28,7 +28,7 @@ No build artifacts live in this repository: `dist/` and `godot/build/` are both 
 |---|---|
 | Hub | <https://ja-treffer.github.io/Food-basket-in-a-week/> |
 | Simulator | <https://ja-treffer.github.io/Food-basket-in-a-week/html_demo/> |
-| Quick check | <https://ja-treffer.github.io/Food-basket-in-a-week/html_review/> |
+| Quick check | `html_review/` | 10 derivation items, 6 per run, scored |
 
 Checksums (`sha256`):
 
