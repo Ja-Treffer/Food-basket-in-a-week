@@ -3,7 +3,7 @@
 **香港家政 / 科技与生活课堂用的七日情景模拟器。**
 NPC 派任务 → 连续几步「不带数字」的选择 → 结算日才结账，逐笔告诉你代价落在哪里。
 
-七天、每天两件事；另有配套的三分钟轻考核、一个可选的现场答题小后端，以及一份 Godot 像素版。
+七天、每天两件事；另有配套的两分钟轻考核、一个可选的现场答题小后端，以及一份 Godot 像素版。
 
 ![标题页](docs/images/title.png)
 
@@ -44,7 +44,7 @@ one-week-basket-web.zip   3c69ceba72702365a2ebedcfb8017e5c29fcd29af381e2e437115f
 | 想做什么 | 怎么做 |
 |---|---|
 | 玩模拟器 | 双击 `game.html`（或 `game.html?seed=2026&lang=tw`） |
-| 做轻考核 | 双击 `review.html`，6 题 3 分钟 |
+| 做轻考核 | 双击 `review.html`，4 题 2 分钟 |
 | 全班同一套题 | `review.html?seed=2026` |
 | 现场答题 | `node live/server.mjs 8788` → 主持 `http://localhost:8788/`，学生 `http://<内网IP>:8788/play` |
 

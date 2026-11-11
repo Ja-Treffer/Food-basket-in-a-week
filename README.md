@@ -3,7 +3,7 @@
 **A seven-day scenario simulator for Hong Kong home-economics / technology-and-living classes.**
 An NPC hands you a task → you make a few choices that show no numbers → the day settles, and every line tells you where the cost landed.
 
-Seven days, two things a day. Ships with a three-minute quick check, an optional live-quiz backend, and a pixel-art Godot build.
+Seven days, two things a day. Ships with a two-minute quick check, an optional live-quiz backend, and a pixel-art Godot build.
 
 [中文说明](README_CH.md)
 
@@ -30,7 +30,7 @@ No build artifacts live in this repository: `dist/` and `godot/build/` are both 
 |---|---|
 | Hub | <https://ja-treffer.github.io/Food-basket-in-a-week/> |
 | Simulator | <https://ja-treffer.github.io/Food-basket-in-a-week/html_demo/> |
-| Quick check | `html_review/` | 10 derivation items, 6 per run, scored |
+| Quick check | `html_review/` | 10 derivation items, 4 per run, scored |
 
 Checksums (`sha256`):
 
@@ -46,7 +46,7 @@ one-week-basket-web.zip   3c69ceba72702365a2ebedcfb8017e5c29fcd29af381e2e437115f
 | I want to… | Do this |
 |---|---|
 | Play the simulator | open `game.html` (or `game.html?seed=2026&lang=zh`) |
-| Take the quick check | open `review.html` — 6 questions, 3 minutes |
+| Take the quick check | open `review.html` — 4 questions, 2 minutes |
 | Give the whole class the same set | `review.html?seed=2026` |
 | Run a live quiz | `node live/server.mjs 8788` → host at `http://localhost:8788/`, students at `http://<lan-ip>:8788/play` |
 
