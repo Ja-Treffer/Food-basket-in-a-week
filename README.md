@@ -19,6 +19,8 @@ Grab both files from [**Releases**](https://github.com/Ja-Treffer/Food-basket-in
 |---|---|---|
 | `One-Week-Basket.exe` | Windows, single file, double-click to play (pck embedded) | 46.4 MB |
 | `one-week-basket-web.zip` | Unzip onto any static host; **must be served over http(s)** — opening `index.html` from disk will not work | 10.5 MB |
+| `One-Week-Basket-5day.exe` | Compact build for shorter lessons: **five days instead of seven**, English by default | 46.4 MB |
+| 5-day web zip | Same build for the browser, English by default | 10.5 MB |
 
 No build artifacts live in this repository: `dist/` and `godot/build/` are both in `.gitignore`, publishing goes through Releases only.
 
@@ -34,7 +36,9 @@ Checksums (`sha256`):
 
 ```
 One-Week-Basket.exe       4e2c464b716e195e2ab2363fce9f510a654f55f78297d8a34a2ccda3db52b6b6
+One-Week-Basket-5day.exe  13a272d06a20b919fde930bb9e349adfade52454946e9e79f07e6c67d7c145e4
 one-week-basket-web.zip   3c69ceba72702365a2ebedcfb8017e5c29fcd29af381e2e437115f19b985a363
+5day web zip              2e22ee29e67e909bc4e0125145376c1c812308bc81227f8122a7569d24494ea7
 ```
 
 ## Or just open it in a browser
