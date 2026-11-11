@@ -154,7 +154,7 @@
   
 
   <div class="bar">
-    <span id="prog">已核对 <b>0</b> / 6</span>
+    <span id="prog">已核对 <b>0</b> / 4</span>
     <span id="tt" class="tt" title="整套约 3 分钟，每题约 30 秒">3:00</span>
     <span class="sp"></span>
     <select id="lang" aria-label="语言">
@@ -172,7 +172,7 @@
 
 <footer>
   <p id="ft1"><b>依据：</b>H1 卫生防护中心《均衡素食的要点》· H2 同页低脂烹调 · H4 Poore &amp; Nemecek（仅取方向）· R2/R5/R6/R7 IPCC AR6 WGIII 第五章 · F1 布料生命周期 · D3 设计取舍记录。</p>
-  <p id="ft2">题库 21 题：15 条情景题 + 6 条衍生题；每次固定抽 6 题——四组各一条，另加两条衍生。网址后加 <code>?seed=2026</code> 可固定同一套。本页不联网、不外链。</p>
+  <p id="ft2">题库 10 题：每题四句理由，只有一句说得出机制。每次随机抽 4 题，每题 1 分。网址后加 <code>?seed=2026</code> 可固定同一套。本页不联网、不外链。</p>
 </footer>
 
 </div>
@@ -185,7 +185,7 @@
   var UI = {
     docTitle:["一周菜篮 · 轻考核","一週菜籃 · 輕考核","One-Week Basket · Quick Check"],
     h1:["一周菜篮 · 轻考核","一週菜籃 · 輕考核","One-Week Basket · Quick Check"],
-    sub:["10 题题库 · 每次 6 题 · 每题 30 秒 · 计分","10 題題庫 · 每次 6 題 · 每題 30 秒 · 計分","10-item bank · 6 per run · 30 seconds each · scored"],
+    sub:["10 题题库 · 每次 4 题 · 每题 30 秒 · 计分","10 題題庫 · 每次 4 題 · 每題 30 秒 · 計分","10-item bank · 4 per run · 30 seconds each · scored"],
     lp:["环境负荷","環境負荷","Environmental load"],
     ls:["营养均衡","營養均衡","Nutrition"],
     lc:["口味接受度","口味接受度","Acceptance"],
@@ -221,15 +221,15 @@
       "H1 Centre for Health Protection, Key Points on a Balanced Vegetarian Diet · H2 low-fat cooking, same page · H4 Poore & Nemecek (direction only) · R2/R5/R6/R7 IPCC AR6 WGIII Ch.5 · F1 textile life cycle · D3 design trade-off notes."
     ],
     ft2:[
-      "题库 10 题：每题四句理由，只有一句说得出机制。每次随机抽 6 题，每题 1 分。网址后加 ?seed=2026 可固定同一套。本页不联网、不外链。",
-      "題庫 10 題：每題四句理由，只有一句說得出機制。每次隨機抽 6 題，每題 1 分。網址後加 ?seed=2026 可固定同一套。本頁不聯網、不外鏈。",
-      "10 items. Each offers four reasons; only one names a mechanism. Every run draws 6, one point each. Add ?seed=2026 to pin the same set. No network calls, no outbound links."
+      "题库 10 题：每题四句理由，只有一句说得出机制。每次随机抽 4 题，每题 1 分。网址后加 ?seed=2026 可固定同一套。本页不联网、不外链。",
+      "題庫 10 題：每題四句理由，只有一句說得出機制。每次隨機抽 4 題，每題 1 分。網址後加 ?seed=2026 可固定同一套。本頁不聯網、不外鏈。",
+      "10 items. Each offers four reasons; only one names a mechanism. Every run draws 4, one point each. Add ?seed=2026 to pin the same set. No network calls, no outbound links."
     ]
   };
 
   var G = {A:"gA", B:"gB", C:"gC", D:"gD", E:"gE"};
   var ORDER = ["A","B","C","D","E"];
-  var TAKE = 6;
+  var TAKE = 4;
 
   /* ============ 题库：每题 t / o / why / x 都是 [简, 繁, 英] ============ */
   var Q = [

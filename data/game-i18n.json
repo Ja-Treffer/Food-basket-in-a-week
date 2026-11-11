@@ -22,7 +22,7 @@
  {
   "zh": "环境负荷",
   "tw": "環境負荷",
-  "en": "Environmental load"
+  "en": "Environmental burden"
  },
  {
   "zh": "营养均衡",
@@ -2722,7 +2722,7 @@
  {
   "zh": "环境",
   "tw": "環境",
-  "en": "Env"
+  "en": "Env burden"
  },
  {
   "zh": "营养",
@@ -2988,5 +2988,10 @@
   "zh": "%d 天过完了。",
   "tw": "%d 天過完了。",
   "en": "%d days are over."
+ },
+ {
+  "zh": "环境负荷越低越好（↓）· 另外三条越高越好",
+  "tw": "環境負荷越低越好（↓）· 另外三條越高越好",
+  "en": "Environmental load: lower is better (↓) · the other three: higher is better"
  }
 ]

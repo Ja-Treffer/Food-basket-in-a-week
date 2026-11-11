@@ -9,7 +9,7 @@ signal info_pressed
 
 const PAD_X := 40
 const PAD_Y := 26
-const BAR_W := 130
+const BAR_W := 100
 
 var _font: Font
 var _day: Label
@@ -75,7 +75,8 @@ func _right(lang: int) -> void:
 		col.add_child(row)
 
 		var tag := _label(13, Palette.SOFT)
-		tag.custom_minimum_size = Vector2(38, 0)
+		# 英文是「Env burden」，比中文的「环境」长得多，标签列要留够宽。
+		tag.custom_minimum_size = Vector2(74, 0)
 		row.add_child(tag)
 
 		var bar := ProgressBar.new()
