@@ -223,7 +223,7 @@
         2. 每项任务连续几步选择，<b>选项不显示任何数值</b>，没有推荐、没有禁用、没有对错。<br>
         3. 全部做完（或不想做）之后才按「结算日」。<br>
         4. 右上角四条读数<b>结算后才变动</b>，并逐条解释原因。<br>
-        5. 第七日之后查看总结算与逐日账本。<br>
+        5. <span class="t">第七日之后查看总结算与逐日账本。</span><br>
         6. <b>课堂模式整局 5 分钟</b>：顶部时钟走完会就地结账，没走完的日子按已走过的算。<br>
         <span style="color:var(--muted)">「自己写一个做法」不计入读数——未经校核的数值不由系统代填，留待轻考核自行举证。</span>
       </div>
@@ -1043,7 +1043,7 @@
     document.body.appendChild(card);
     function show(code){
       $('rcCode').textContent=code;
-      $('rcBody').textContent=REF[code]||'（这一条还没有录入摘录。）';
+      $('rcBody').textContent=T(REF[code]||'（这一条还没有录入摘录。）');
       card.hidden=false;
     }
     document.addEventListener('click',function(e){

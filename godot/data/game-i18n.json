@@ -22,7 +22,7 @@
  {
   "zh": "环境负荷",
   "tw": "環境負荷",
-  "en": "Environmental load"
+  "en": "Environmental burden"
  },
  {
   "zh": "营养均衡",
@@ -61,113 +61,113 @@
  },
  {
   "zh": "衞生防護中心《均衡素食的要點》原文：「素食並非必然健康」；「植物雖提供蛋白質，但其質素並未及肉類和奶類」；「現時未有植物性食物獲證實能為人體安全和有效提供維生素B12……全素食者應進食添加了維生素B12的產品」；「素食者特別容易缺乏鐵質……並進食含豐富維生素C的食物……以助身體吸收鐵質」；钙的來源包括「硬豆腐、加鈣豆漿和深綠色蔬菜」。【原文已核】",
-  "tw": "衞生防護中心《均衡素食的要點》原文：「素食並非必然健康」；「植物雖提供蛋白質，但其質素並未及肉類和奶類」；「現時未有植物性食物獲證實能為人體安全和有效提供維生素B12……全素食者應進食添加了維生素B12的產品」；「素食者特別容易缺乏鐵質……並進食含豐富維生素C的食物……以助身體吸收鐵質」；鈣的來源包括「硬豆腐、加鈣豆漿和深綠色蔬菜」。【原文已核】",
-  "en": "Centre for Health Protection, Key Points on a Balanced Vegetarian Diet, verbatim: 'A vegetarian diet is not automatically healthy'; 'although plants provide protein, its quality does not match that of meat and dairy'; 'no plant food has yet been shown to supply vitamin B12 to the human body safely and effectively… vegans should eat foods with added vitamin B12'; 'vegetarians are especially prone to iron deficiency… and should eat foods rich in vitamin C… to help the body absorb iron'; calcium sources include 'firm tofu, calcium-fortified soy milk and dark green vegetables'. [original checked]"
+  "tw": "衞生防護中心《均衡素食的要點》原文：「素食並非必然健康」；「植物雖提供蛋白質，但其質素並未及肉類和奶類」；「現時未有植物性食物獲證實能為人體安全和有效提供維生素B12……全素食者應進食添加了維生素B12的產品」；「素食者特別容易缺乏鐵質……並進食含豐富維生素C的食物……以助身體吸收鐵質」；钙的來源包括「硬豆腐、加鈣豆漿和深綠色蔬菜」。【原文已核】",
+  "en": "Centre for Health Protection, \"Key points on a balanced vegetarian diet\": \"vegetarian is not automatically healthy\"; \"plant foods do supply protein, but of lower quality than meat and dairy\"; \"no plant food has been shown to provide B12 safely and effectively… vegans should take B12-fortified products\"; \"vegetarians are especially prone to iron deficiency… eat vitamin-C rich foods to help absorption\"; calcium sources include \"firm tofu, calcium-fortified soy milk and dark green vegetables\". [Text verified]"
  },
  {
   "zh": "同页：「採用蒸、炆、燉、焯等低脂烹調方法代替煎和炸」；「大豆製品（如豆腐、腐竹、豆乾）……以提升餸菜的鮮味和口感」。【原文已核】",
-  "tw": "同頁：「採用蒸、炆、燉、焯等低脂烹調方法代替煎和炸」；「大豆製品（如豆腐、腐竹、豆乾）……以提升餸菜的鮮味和口感」。【原文已核】",
-  "en": "Same page: 'replace frying and deep-frying with low-fat cooking methods such as steaming, braising, stewing and blanching'; 'soy products (such as tofu, bean curd sticks and dried tofu)… to bring out the savour and texture of the dish'. [original checked]"
+  "tw": "同页：「採用蒸、炆、燉、焯等低脂烹調方法代替煎和炸」；「大豆製品（如豆腐、腐竹、豆乾）……以提升餸菜的鮮味和口感」。【原文已核】",
+  "en": "Same page: \"use steaming, braising, stewing or blanching instead of frying\"; \"soy products (tofu, bean curd sticks, dried tofu)… to lift the savoury taste\". [Text verified]"
  },
  {
   "zh": "漁護署《關於漁業》：「政府的漁業政策旨在保育本地的漁業資源及促進漁業可持續發展運用，使本地消費者不斷有穩定的鮮魚供應」；另有「優質養魚場計劃」表述。【搜索结果原文片段已核】",
-  "tw": "漁護署《關於漁業》：「政府的漁業政策旨在保育本地的漁業資源及促進漁業可持續發展運用，使本地消費者不斷有穩定的鮮魚供應」；另有「優質養魚場計劃」表述。【搜索結果原文片段已核】",
-  "en": "AFCD, About Fisheries: 'The Government's fisheries policy aims to conserve local fisheries resources and promote their sustainable development and use, so that local consumers have a steady supply of fresh fish'; it also mentions the 'Accredited Fish Farm Scheme'. [search-result excerpt checked]"
+  "tw": "漁護署《關於漁業》：「政府的漁業政策旨在保育本地的漁業資源及促進漁業可持續發展運用，使本地消費者不斷有穩定的鮮魚供應」；另有「優質養魚場計劃」表述。【搜索结果原文片段已核】",
+  "en": "AFCD, \"About Fisheries\": \"the government's fisheries policy aims to conserve local fishery resources and promote sustainable development, so that local consumers have a stable supply of fresh fish\"; also the \"Accredited Fish Farm Scheme\". [Search snippet verified]"
  },
  {
   "zh": "Poore & Nemecek (2018) 经 Our World in Data 处理：单位 kgCO₂eq/kg、数据年份 2010，支持「白肉/豆类低于反刍红肉」这一方向。TODO(需核验)：未读到各品项具体数值，故不写 kg 数。",
-  "tw": "Poore & Nemecek (2018) 經 Our World in Data 處理：單位 kgCO₂eq/kg、數據年份 2010，支持「白肉／豆類低於反芻紅肉」這一方向。TODO（需核驗）：未讀到各品項具體數值，故不寫 kg 數。",
-  "en": "Poore & Nemecek (2018), as processed by Our World in Data: unit kgCO₂eq/kg, data year 2010. It supports the direction that 'white meat and pulses sit below ruminant red meat'. TODO (to verify): the specific figure for each item was not read, so no kg numbers are given."
+  "tw": "Poore & Nemecek (2018) 经 Our World in Data 处理：单位 kgCO₂eq/kg、数据年份 2010，支持「白肉/豆类低于反刍红肉」这一方向。TODO(需核验)：未读到各品项具体数值，故不写 kg 数。",
+  "en": "Poore & Nemecek (2018), Science 360:987–992, via Our World in Data: kgCO₂eq per kg, data year 2010; supports the direction \"white meat and pulses sit below ruminant red meat\". TODO(verify): per-item values not read, so no kg figures are quoted."
  },
  {
   "zh": "教育局课程文件页列有「科技與生活 (中四至中六)」及「健康管理與社會關懷」课程及评估指引。TODO(需核验)：范畴名称待查 PDF。",
-  "tw": "教育局課程文件頁列有「科技與生活（中四至中六）」及「健康管理與社會關懷」課程及評估指引。TODO（需核驗）：範疇名稱待查 PDF。",
-  "en": "The EDB curriculum documents page lists the curriculum and assessment guides for 'Technology and Living (S4–S6)' and 'Health Management and Social Care'. TODO (to verify): the strand names still need checking in the PDF."
+  "tw": "教育局课程文件页列有「科技與生活 (中四至中六)」及「健康管理與社會關懷」课程及评估指引。TODO(需核验)：范畴名称待查 PDF。",
+  "en": "EDB curriculum pages list \"Technology and Living (S4–S6)\" and \"Health Management and Social Care\" guides. TODO(verify): exact strand names to be checked in the PDF."
  },
  {
   "zh": "IPCC AR6 WGIII Ch5：需求侧策略到 2050 年可减少 40–70% 排放（high confidence）。【原文已核】",
-  "tw": "IPCC AR6 WGIII Ch5：需求側策略到 2050 年可減少 40–70% 排放（high confidence）。【原文已核】",
-  "en": "IPCC AR6 WGIII Ch5: demand-side strategies can cut emissions by 40–70% by 2050 (high confidence). [original checked]"
+  "tw": "IPCC AR6 WGIII Ch5：需求侧策略到 2050 年可减少 40–70% 排放（high confidence）。【原文已核】",
+  "en": "IPCC AR6 WGIII Ch5: demand-side strategies could cut emissions by 40–70% by 2050 (high confidence). [Verified]"
  },
  {
   "zh": "同章：最大 Avoid 来自减少长途航空，最大 Shift 来自植物性饮食，最大 Improve 来自建筑能效。【原文已核】",
-  "tw": "同章：最大 Avoid 來自減少長途航空，最大 Shift 來自植物性飲食，最大 Improve 來自建築能效。【原文已核】",
-  "en": "Same chapter: the biggest Avoid potential comes from cutting long-haul flights, the biggest Shift from plant-based diets, and the biggest Improve from building energy efficiency. [original checked]"
+  "tw": "同章：最大 Avoid 来自减少长途航空，最大 Shift 来自植物性饮食，最大 Improve 来自建筑能效。【原文已核】",
+  "en": "Same chapter: the largest Avoid is long-haul aviation, the largest Shift is plant-based diets, the largest Improve is building efficiency. [Verified]"
  },
  {
   "zh": "同章：优先无车出行与电动化约 2 tCO2eq/人/年量级。【原文已核；已折算为相对刻度】",
-  "tw": "同章：優先無車出行與電動化約 2 tCO2eq／人／年量級。【原文已核；已折算為相對刻度】",
-  "en": "Same chapter: prioritising car-free travel and electrification is on the order of about 2 tCO2eq per person per year. [original checked; converted to a relative scale]"
+  "tw": "同章：优先无车出行与电动化约 2 tCO2eq/人/年量级。【原文已核；已折算为相对刻度】",
+  "en": "Same chapter: car-free travel plus electrification is on the order of 2 tCO₂eq per person per year. [Verified; converted to a relative scale]"
  },
  {
   "zh": "同章：体面生活标准（DLS）与福祉可在低需求路径下实现。【原文已核】",
-  "tw": "同章：體面生活標準（DLS）與福祉可在低需求路徑下實現。【原文已核】",
-  "en": "Same chapter: decent living standards (DLS) and well-being can be achieved along low-demand pathways. [original checked]"
+  "tw": "同章：体面生活标准（DLS）与福祉可在低需求路径下实现。【原文已核】",
+  "en": "Same chapter: decent living standards and well-being are achievable on low-demand pathways. [Verified]"
  },
  {
   "zh": "同章：共享/循环经济贡献有限，收益主张「limited evidence」。【原文已核】",
-  "tw": "同章：共享／循環經濟貢獻有限，收益主張「limited evidence」。【原文已核】",
-  "en": "Same chapter: sharing and the circular economy contribute only so much, and the claimed benefits rest on 'limited evidence'. [original checked]"
+  "tw": "同章：共享/循环经济贡献有限，收益主张「limited evidence」。【原文已核】",
+  "en": "Same chapter: sharing and the circular economy contribute modestly; the gain is claimed on \"limited evidence\". [Verified]"
  },
  {
   "zh": "同章列举的高潜行动含空调设定温度调整、转公共交通、减少电器使用。【原文已核】",
-  "tw": "同章列舉的高潛行動含空調設定溫度調整、轉公共交通、減少電器使用。【原文已核】",
-  "en": "The high-potential actions listed in the same chapter include adjusting air-conditioner set-points, switching to public transport and using appliances less. [original checked]"
+  "tw": "同章列举的高潜行动含空调设定温度调整、转公共交通、减少电器使用。【原文已核】",
+  "en": "Same chapter's high-potential actions include adjusting air-conditioning set points, shifting to public transport and cutting appliance use. [Verified]"
  },
  {
   "zh": "回弹效应：省下的钱转投其他消费会抵消部分减排。TODO(需核验)：未取到原文与百分比。",
-  "tw": "回彈效應：省下的錢轉投其他消費會抵消部分減排。TODO（需核驗）：未取到原文與百分比。",
-  "en": "Rebound effect: the money you save gets spent on other things, which cancels out part of the emission cut. TODO (to verify): no source text or percentage obtained yet."
+  "tw": "回弹效应：省下的钱转投其他消费会抵消部分减排。TODO(需核验)：未取到原文与百分比。",
+  "en": "Rebound effect: money saved is spent elsewhere and offsets part of the reduction. TODO(verify): source text and percentage not obtained."
  },
  {
   "zh": "Wynes & Nicholas 2017：教材偏爱的低影响行动与真正高影响行动存在错配。TODO(需核验)。",
-  "tw": "Wynes & Nicholas 2017：教材偏愛的低影響行動與真正高影響行動存在錯配。TODO（需核驗）。",
-  "en": "Wynes & Nicholas 2017: the low-impact actions textbooks favour are mismatched with the actions that really have high impact. TODO (to verify)."
+  "tw": "Wynes & Nicholas 2017：教材偏爱的低影响行动与真正高影响行动存在错配。TODO(需核验)。",
+  "en": "Wynes & Nicholas (2017), Environ. Res. Lett. 12:074024: textbooks favour low-impact actions that do not match the high-impact ones. TODO(verify)."
  },
  {
   "zh": "个人碳足迹框架的批评及反驳。TODO(需核验)：双方原文未核，倡导因此只给概率。",
-  "tw": "個人碳足跡框架的批評及反駁。TODO（需核驗）：雙方原文未核，倡導因此只給概率。",
-  "en": "Criticism of the personal carbon-footprint framing, and the replies to it. TODO (to verify): neither side's original text is checked, so advocacy only returns a probability."
+  "tw": "个人碳足迹框架的批评及反驳。TODO(需核验)：双方原文未核，倡导因此只给概率。",
+  "en": "Critiques of the personal-carbon-footprint frame, and the replies. TODO(verify): neither side read in full, so advocacy is scored as a probability."
  },
  {
   "zh": "布料生命周期（原料、洗涤温度、耐用次数、微纤维）。TODO(需核验)：未取到一手数据，布料相关一律给方向并标 C。",
-  "tw": "布料生命週期（原料、洗滌溫度、耐用次數、微纖維）。TODO（需核驗）：未取到一手數據，布料相關一律給方向並標 C。",
-  "en": "The life cycle of fabric (raw material, washing temperature, number of wears, microfibres). TODO (to verify): no primary data obtained, so anything about fabric gives direction only and is graded C."
+  "tw": "布料生命周期（原料、洗涤温度、耐用次数、微纤维）。TODO(需核验)：未取到一手数据，布料相关一律给方向并标 C。",
+  "en": "Fabric life cycle (fibre, wash temperature, number of wears, microfibres). TODO(verify): no primary data obtained; fabric items give direction only and are marked C."
  },
  {
   "zh": "设计参数：0–100 相对刻度；方向取自来源，数值是教学映射，不是排放因子、营养素含量或港币。",
-  "tw": "設計參數：0–100 相對刻度；方向取自來源，數值是教學映射，不是排放因子、營養素含量或港幣。",
-  "en": "Design choice: a 0–100 relative scale. The direction comes from the sources; the numbers are a teaching mapping, not emission factors, nutrient contents or Hong Kong dollars."
+  "tw": "设计参数：0–100 相对刻度；方向取自来源，数值是教学映射，不是排放因子、营养素含量或港币。",
+  "en": "Design parameter: a 0–100 relative scale; direction comes from the sources, magnitude is a teaching mapping — not emission factors, nutrient values or HKD."
  },
  {
   "zh": "设计参数：模糊区间宽度表示条件依赖程度（产地、运输、认证、家庭习惯）。",
-  "tw": "設計參數：模糊區間寬度表示條件依賴程度（產地、運輸、認證、家庭習慣）。",
-  "en": "Design choice: the width of each fuzzy band shows how much it depends on conditions (origin, transport, certification, household habits)."
+  "tw": "设计参数：模糊区间宽度表示条件依赖程度（产地、运输、认证、家庭习惯）。",
+  "en": "Design parameter: the width of a fuzzy range shows how far the outcome depends on conditions (origin, transport, certification, household habits)."
  },
  {
   "zh": "设计参数：口味/接受度跌破阈值触发「出去补一顿」，对应「家人不长期接受 ⇒ 方案不持久」。",
-  "tw": "設計參數：口味／接受度跌破閾值觸發「出去補一頓」，對應「家人不長期接受 ⇒ 方案不持久」。",
-  "en": "Design choice: if taste/acceptance drops below the threshold, the family 'eats out to make up for it' — the rule that 'if the family won't accept it long term, the plan won't last'."
+  "tw": "设计参数：口味/接受度跌破阈值触发「出去补一顿」，对应「家人不长期接受 ⇒ 方案不持久」。",
+  "en": "Design parameter: taste/acceptance falling below a threshold triggers \"eating out\" — a plan the family will not keep does not last."
  },
  {
   "zh": "设计参数：回弹系数。",
-  "tw": "設計參數：回彈係數。",
-  "en": "Design choice: a rebound coefficient."
+  "tw": "设计参数：回弹系数。",
+  "en": "Design parameter: rebound coefficient."
  },
  {
   "zh": "设计参数：倡导给概率而非确定点数。",
-  "tw": "設計參數：倡導給概率而非確定點數。",
-  "en": "Design choice: advocacy returns a probability, not a fixed number of points."
+  "tw": "设计参数：倡导给概率而非确定点数。",
+  "en": "Design parameter: advocacy is scored as a probability, not a fixed number of points."
  },
  {
   "zh": "设计参数：延迟结算，用来呈现当时看不见的代价。",
-  "tw": "設計參數：延遲結算，用來呈現當時看不見的代價。",
-  "en": "Design choice: settlement is delayed, so a cost you cannot see at the time still shows up."
+  "tw": "设计参数：延迟结算，用来呈现当时看不见的代价。",
+  "en": "Design parameter: delayed settlement, to stage a cost that was invisible when the choice was made."
  },
  {
   "zh": "设计参数：所有数值后置——选择阶段不显示任何读数提示，结算日才逐条解释。",
-  "tw": "設計參數：所有數值後置——選擇階段不顯示任何讀數提示，結算日才逐條解釋。",
-  "en": "Design choice: every number is held back. No readings appear while you choose; they are explained item by item on the settlement day."
+  "tw": "设计参数：所有数值后置——选择阶段不显示任何读数提示，结算日才逐条解释。",
+  "en": "Design parameter: every number is withheld — no reading is shown while choosing, and all of it is explained on settlement day."
  },
  {
   "zh": "母亲",
@@ -1787,7 +1787,7 @@
  {
   "zh": " 项 NPC 任务，每项含连续 3 步选择；做完（或跳过）后按「结算日」；共 ",
   "tw": " 項 NPC 任務，每項含連續 3 步選擇；做完（或跳過）後按「結算日」；共 ",
-  "en": " NPC tasks, each with three choices in a row; press “Settlement day” once you finish (or skip); "
+  "en": " NPC tasks, each with three choices in a row; press \"Settlement day\" once you finish (or skip); "
  },
  {
   "zh": " 日。",
@@ -1867,7 +1867,7 @@
  {
   "zh": "每笔正的「可用钱」按 ",
   "tw": "每筆正的「可用錢」按 ",
-  "en": "Every positive “spare money” entry goes into the pot at "
+  "en": "Every positive \"spare money\" entry goes into the pot at "
  },
  {
   "zh": " 入池，最后一日乘 ",
@@ -1917,7 +1917,7 @@
  {
   "zh": " 分钟（`?minutes=7` 改预算，`?timer=0` 关掉）。时间到时若还在选择中途，直接跳到当日结算；结算页提示「时间到」，可以一键跳到总结算。",
   "tw": " 分鐘（`?minutes=7` 改預算，`?timer=0` 關掉）。時間到時若還在選擇中途，直接跳到當日結算；結算頁提示「時間到」，可以一鍵跳到總結算。",
-  "en": " minutes (`?minutes=7` changes the budget, `?timer=0` turns it off). If time runs out mid-choice, the game jumps straight to that day's settlement; the page says “time's up”, and one click takes you to the final tally."
+  "en": " minutes (`?minutes=7` changes the budget, `?timer=0` turns it off). If time runs out mid-choice, the game jumps straight to that day's settlement; the page says \"time's up\", and one click takes you to the final tally."
  },
  {
   "zh": "自定做法",
@@ -1927,7 +1927,7 @@
  {
   "zh": "「自己写一个做法」不计入读数，结算标「需自行举证」——未经校核的数值不由系统代填。",
   "tw": "「自己寫一個做法」不計入讀數，結算標「需自行舉證」——未經校核的數值不由系統代填。",
-  "en": "“Write your own move” does not count towards the readings and is settled as “you must show your evidence” — the system will not fill in numbers nobody checked."
+  "en": "\"Write your own move\" does not count towards the readings and is settled as \"you must show your evidence\" — the system will not fill in numbers nobody checked."
  },
  {
   "zh": "复现",
@@ -2092,12 +2092,12 @@
  {
   "zh": "<div class=\"btnrow\"><button class=\"mini\" id=\"backTodo\">返回今日清单</button></div>",
   "tw": "<div class=\"btnrow\"><button class=\"mini\" id=\"backTodo\">返回今日清單</button></div>",
-  "en": "<div class=\"btnrow\"><button class=\"mini\" id=\"backTodo\">Back to today’s list</button></div>"
+  "en": "<div class=\"btnrow\"><button class=\"mini\" id=\"backTodo\">Back to today's list</button></div>"
  },
  {
   "zh": "<h2>今日清单 · 第 ",
   "tw": "<h2>今日清單 · 第 ",
-  "en": "<h2>Today’s list · Day "
+  "en": "<h2>Today's list · Day "
  },
  {
   "zh": " 日</h2>",
@@ -2988,5 +2988,10 @@
   "zh": "%d 天过完了。",
   "tw": "%d 天過完了。",
   "en": "%d days are over."
+ },
+ {
+  "zh": "环境负荷越低越好（↓）· 另外三条越高越好",
+  "tw": "環境負荷越低越好（↓）· 另外三條越高越好",
+  "en": "Environmental load: lower is better (↓) · the other three: higher is better"
  }
 ]

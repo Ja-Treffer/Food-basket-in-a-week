@@ -133,10 +133,10 @@ func _refs_body() -> String:
 	var out := _t("摘录为原文或来源说明；编号在结算页每一笔后面。") + "\n\n"
 	out += "[b]" + _t("教学依据") + "[/b]\n\n"
 	for c in teaching:
-		out += "[b]" + String(c) + "[/b]  " + String(model.refs[c]) + "\n\n"
+		out += "[b]" + String(c) + "[/b]  " + _t(String(model.refs[c])) + "\n\n"
 	out += "\n[b]" + _t("设计参数") + "[/b]  " + _t("（不是文献结论，是本教具自己的刻度与规则）") + "\n\n"
 	for c in design:
-		out += "[b]" + String(c) + "[/b]  " + String(model.refs[c]) + "\n\n"
+		out += "[b]" + String(c) + "[/b]  " + _t(String(model.refs[c])) + "\n\n"
 	return out
 
 
