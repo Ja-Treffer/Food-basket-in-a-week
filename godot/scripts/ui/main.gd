@@ -8,6 +8,8 @@ extends Control
 
 const DATA_PATH := "res://data/game.json"
 const I18N_PATH := "res://data/game-i18n.json"
+## 打包时写入的构建参数：{"days":5,"lang":2}。没有这个文件就用游戏自带的七天与系统语言。
+const BUILD_PATH := "res://data/build.json"
 
 var presenter: Presenter
 var _font: Font
@@ -21,8 +23,13 @@ func _ready() -> void:
 		push_error("读不到 " + DATA_PATH)
 		return
 	var i18n := I18nBox.load_from(I18N_PATH)
+	# 打包时烘进去的构建参数（五天版 / 默认英文都在这里），没有就不改。
+	var build := _load(BUILD_PATH)
+	var cfg: Dictionary = data.get("cfg", {})
+	if build.has("days"):
+		cfg["days"] = int(build["days"])
 	var model := TradeoffSession.new({
-		"cfg": data.get("cfg", {}),
+		"cfg": cfg,
 		"tasks": data.get("tasks", []),
 		"long": data.get("long", []),
 		"events": data.get("events", []),
@@ -31,7 +38,7 @@ func _ready() -> void:
 
 	var q := _query()
 	var seed_value := int(q.get("seed", 2026))
-	var lang := _lang_id(String(q.get("lang", "0")))
+	var lang := _default_lang(q, build)
 	i18n.set_lang(lang)
 	model.new_game(seed_value)
 
@@ -123,6 +130,19 @@ func _query() -> Dictionary:
 		else:
 			out[body] = "1"
 	return out
+
+
+## 语言优先级：命令行 --lang= > 构建烘进去的默认 > 浏览器固定英文 > 系统语言。
+func _default_lang(q: Dictionary, build: Dictionary) -> int:
+	if q.has("lang"):
+		return _lang_id(str(q["lang"]))
+	if build.has("lang"):
+		# JSON 的数字是 float，str(2.0) 会变成 "2.0"，先取整。
+		return _lang_id(str(int(build["lang"])))
+	# 网页版默认英文：浏览器里的系统语言不可靠，课堂投影也常是英文环境。
+	if OS.has_feature("web"):
+		return 2
+	return _lang_id("")
 
 
 func _lang_id(v: String) -> int:

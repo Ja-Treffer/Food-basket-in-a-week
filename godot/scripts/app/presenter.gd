@@ -71,7 +71,7 @@ func set_lang(idx: int) -> void:
 func title_texts() -> Dictionary:
 	return {
 		"title": _t("一周菜篮"),
-		"sub": _t("七日 · 一天两件事 · 结账才看见数字"),
+		"sub": _sub_title(),
 		"start": _t("开始这一周"),
 		"links": {
 			"rules": _t("怎么玩"),
@@ -79,6 +79,16 @@ func title_texts() -> Dictionary:
 			"about": _t("关于"),
 		},
 	}
+
+
+## 副标题跟着局的长短走：五天包别写「七日」。
+func _sub_title() -> String:
+	var d := int(model.cfg.get("days", 7))
+	if d == 5:
+		return _t("五日 · 一天两件事 · 结账才看见数字")
+	if d == 7:
+		return _t("七日 · 一天两件事 · 结账才看见数字")
+	return _t("共 %d 日 · 一天两件事 · 结账才看见数字") % d
 
 
 # ---------------------------------------------------------------- 资料
@@ -239,10 +249,20 @@ func _settle() -> void:
 	_paint_hud()
 
 
+## 收尾那句也跟着局的长短走。
+func _closing_line() -> String:
+	var d := int(model.cfg.get("days", 7))
+	if d == 7:
+		return _t("七天过完了。")
+	if d == 5:
+		return _t("五天过完了。")
+	return _t("%d 天过完了。") % d
+
+
 func _summary() -> void:
 	stage.set_night(true)
 	await _beat(0.4)
-	await _say("", _t("七天过完了。"))
+	await _say("", _closing_line())
 	var names := _axis_names()
 	var parts: Array = []
 	for axis in Palette.AXIS_ORDER:

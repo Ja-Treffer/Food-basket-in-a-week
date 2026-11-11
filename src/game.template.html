@@ -940,11 +940,12 @@
       (g.phase==='settle'?' · 已结算':' · 未结算')+'</span></div>'+
       '<div class="sub">读数只在结算日变动。选择时不会预告后果。</div>'+
       KEYS.map(function(k){var v=g[k[0]];
-        return '<div class="srow" data-k="'+k[0]+'"><span class="nm">'+META[k[0]]+'</span>'+
+        var nm=META[k[0]]+(k[0]==='p'?' ↓':'');
+        return '<div class="srow" data-k="'+k[0]+'"><span class="nm">'+nm+'</span>'+
           '<span class="track"><span class="fill" style="display:block;width:'+v+'%;background:'+col(k[0],v)+'"></span></span>'+
           '<span class="vl" style="color:'+col(k[0],v)+'">'+v+'</span><span class="delta"></span></div>';
       }).join('')+
-      '<div class="foot">p 环境负荷（低好）· s 营养 · c 口味／接受度 · m 可用钱<br>'+
+      '<div class="foot">环境负荷越低越好（↓）· 另外三条越高越好<br>'+
       '今日 '+g.todayTasks.filter(function(t){return !!g.done[t.id];}).length+' / '+g.todayTasks.length+' 项已封存</div>';
   }
   function render(){

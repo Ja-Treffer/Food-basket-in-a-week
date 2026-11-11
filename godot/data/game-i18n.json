@@ -2968,5 +2968,25 @@
   "zh": "「%s」%s",
   "tw": "「%s」%s",
   "en": "\"%s\" — %s"
+ },
+ {
+  "zh": "五日 · 一天两件事 · 结账才看见数字",
+  "tw": "五日 · 一天兩件事 · 結賬才看見數字",
+  "en": "Five days, two things a day, numbers only at settlement"
+ },
+ {
+  "zh": "共 %d 日 · 一天两件事 · 结账才看见数字",
+  "tw": "共 %d 日 · 一天兩件事 · 結賬才看見數字",
+  "en": "%d days, two things a day, numbers only at settlement"
+ },
+ {
+  "zh": "五天过完了。",
+  "tw": "五天過完了。",
+  "en": "Five days are over."
+ },
+ {
+  "zh": "%d 天过完了。",
+  "tw": "%d 天過完了。",
+  "en": "%d days are over."
  }
 ]

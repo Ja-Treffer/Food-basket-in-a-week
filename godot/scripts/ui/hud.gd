@@ -143,9 +143,32 @@ func paint(day_text: String, place_text: String, values: Dictionary, names: Dict
 	_day.text = day_text
 	_place.text = place_text
 	for axis in Palette.AXIS_ORDER:
-		_bars[axis].value = int(values.get(axis, 0))
-		_nums[axis].text = str(int(values.get(axis, 0)))
-		_tags[axis].text = String(names.get(axis, ""))
+		var v := int(values.get(axis, 0))
+		_bars[axis].value = v
+		_nums[axis].text = str(v)
+		# 环境负荷是「负担」，不是成就：条越长越糟，所以它不跟另外三条共用轴色，
+		# 改成「低=绿、中=琥珀、高=锈红」的三段警示色，标签再挂个下箭头。
+		if axis == "p":
+			_set_fill(axis, _burden_color(v))
+		var nm := String(names.get(axis, ""))
+		_tags[axis].text = (nm + " ↓") if axis == "p" else nm
+
+
+## 负担轴的三段色：和 HTML 版同一套阈值（75 / 50），两个端口径一致。
+func _burden_color(v: int) -> Color:
+	if v >= 75:
+		return Color("#b8503f")
+	if v >= 50:
+		return Color("#b1792b")
+	return Palette.AXIS["p"]
+
+
+func _set_fill(axis: String, color: Color) -> void:
+	var bar: ProgressBar = _bars[axis]
+	var sb := StyleBoxFlat.new()
+	sb.bg_color = color
+	sb.set_corner_radius_all(2)
+	bar.add_theme_stylebox_override("fill", sb)
 
 
 ## 语言变了以后，下拉里显示的名字也得跟着换（否则切到英文还写着「简体」）。
